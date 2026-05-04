@@ -33,6 +33,7 @@ a{
   padding:12px;
   border-radius:8px;
   margin-top:10px;
+  cursor:pointer;
 }
 </style>
 
@@ -56,15 +57,20 @@ function showClients(){
   let div = document.getElementById("list");
   div.innerHTML = "";
 
-  clients.forEach(c=>{
+  clients.forEach((c,index)=>{
     div.innerHTML += `
-      <div class="client">
+      <div class="client" onclick="openGame(${index})">
         <b>${c.name}</b><br>
         Commission: ${c.commission}%<br>
         Patti: ${c.patti}%
       </div>
     `;
   });
+}
+
+function openGame(i){
+  localStorage.setItem("activeClient", i);
+  window.location.href = "game.html";
 }
 
 showClients();
