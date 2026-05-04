@@ -10,6 +10,20 @@ body{
   padding:10px;
 }
 
+.inputBox{
+  margin-bottom:10px;
+  background:#fff;
+  padding:10px;
+  border-radius:8px;
+}
+
+.inputBox input{
+  width:100%;
+  padding:8px;
+  margin-top:5px;
+  box-sizing:border-box;
+}
+
 .grid99{
   display:grid;
   grid-template-columns: repeat(10,1fr);
@@ -37,10 +51,27 @@ body{
   text-align:center;
   margin-top:3px;
 }
+
+.total{
+  margin-top:10px;
+  font-size:18px;
+  font-weight:bold;
+}
 </style>
 </head>
 
 <body>
+
+<!-- NEW INPUT BOXES -->
+<div class="inputBox">
+  <label>Numbers (auto format 05 12 25)</label>
+  <input id="numInput" type="text" placeholder="Enter numbers">
+</div>
+
+<div class="inputBox">
+  <label>Amount</label>
+  <input id="amountInput" type="number" placeholder="Enter amount">
+</div>
 
 <h3>00 - 99</h3>
 <div class="grid99" id="panel"></div>
@@ -51,6 +82,8 @@ body{
 <h3>B</h3>
 <div class="gridAB" id="bahar"></div>
 
+<div class="total">Total: ₹<span id="total">0</span></div>
+
 <script>
 
 // 00-99
@@ -59,29 +92,53 @@ for(let i=0;i<100;i++){
   document.getElementById("panel").innerHTML += `
     <div class="box">
       ${num}
-      <input type="number">
+      <input type="number" class="calc">
     </div>
   `;
 }
 
-// A/B (1-9,0)
+// A/B
 let nums=[1,2,3,4,5,6,7,8,9,0];
 
 nums.forEach(n=>{
   document.getElementById("andar").innerHTML += `
     <div class="box">
       ${n}
-      <input type="number">
+      <input type="number" class="calc">
     </div>
   `;
   
   document.getElementById("bahar").innerHTML += `
     <div class="box">
       ${n}
-      <input type="number">
+      <input type="number" class="calc">
     </div>
   `;
 });
+
+// AUTO FORMAT (05 12 25)
+document.getElementById("numInput").addEventListener("input", function(){
+  let val = this.value.replace(/\D/g,'');
+  let formatted = val.match(/.{1,2}/g);
+  this.value = formatted ? formatted.join(" ") : "";
+  calcTotal();
+});
+
+// TOTAL CALCULATION
+function calcTotal(){
+  let sum = 0;
+
+  document.querySelectorAll(".calc").forEach(inp=>{
+    sum += Number(inp.value) || 0;
+  });
+
+  let amount = Number(document.getElementById("amountInput").value) || 0;
+
+  document.getElementById("total").innerText = sum + amount;
+}
+
+// live update
+document.addEventListener("input", calcTotal);
 
 </script>
 
