@@ -10,7 +10,7 @@ body{
   padding:10px;
 }
 
-/* 00–99 */
+/* 00–99 GRID */
 .grid99{
   display:grid;
   grid-template-columns: repeat(10,1fr);
@@ -18,7 +18,6 @@ body{
   margin-bottom:10px;
 }
 
-/* BOX */
 .box{
   background:#fff;
   border-radius:6px;
@@ -78,11 +77,10 @@ button{
 
 <body>
 
-<!-- 🔥 00–99 -->
 <h3>00 - 99</h3>
 <div class="grid99" id="panel"></div>
 
-<!-- 🔵 A/B GRID -->
+<!-- A/B -->
 <div class="section">
 <h3>A (0–9)</h3>
 <div id="aBox" class="abRow"></div>
@@ -93,135 +91,95 @@ button{
 <div class="total">Total: ₹<span id="total">0</span></div>
 </div>
 
-<!-- 🟡 JODI -->
+<!-- JODI -->
 <div class="section">
 <h3>JODI INPUT</h3>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<div>
-<div style="font-size:10px;color:#666;">INPUT</div>
 <input id="jodiNums" placeholder="12 34 56">
-</div>
-
-<div>
-<div style="font-size:10px;color:#666;">AMOUNT</div>
 <input id="jodiAmt" type="number" placeholder="₹">
-</div>
 </div>
 
 <button onclick="addJodi()">ADD JODI</button>
 </div>
 
-<!-- 🔴 CROSSING -->
+<!-- CROSSING -->
 <div class="section">
 <h3>CROSSING</h3>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<div>
-<div style="font-size:10px;color:#666;">NUMBER 1</div>
 <input id="n1" placeholder="123">
-</div>
-
-<div>
-<div style="font-size:10px;color:#666;">NUMBER 2</div>
 <input id="n2" placeholder="456">
 </div>
-</div>
 
-<div style="margin-top:8px;">
 <label><input type="checkbox" id="nojodi"> WITHOUT JODI</label>
-</div>
 
-<div style="margin-top:8px;">
-<div style="font-size:10px;color:#666;">AMOUNT</div>
 <input id="crossAmt" type="number" placeholder="₹">
-</div>
-
 <button onclick="generateCross()">GENERATE CROSS</button>
 </div>
 
-<!-- 🟢 A INPUT -->
+<!-- A INPUT -->
 <div class="section">
 <h3>A INPUT</h3>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<div>
-<div style="font-size:10px;color:#666;">NUMBER</div>
 <input id="aNums" placeholder="1 2 3">
-</div>
-
-<div>
-<div style="font-size:10px;color:#666;">AMOUNT</div>
 <input id="aAmt" type="number" placeholder="₹">
 </div>
+
+<button onclick="addA()">ADD A</button>
 </div>
 
-<button onclick="addAInput()">ADD A</button>
-</div>
-
-<!-- 🔵 B INPUT -->
+<!-- B INPUT -->
 <div class="section">
 <h3>B INPUT</h3>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<div>
-<div style="font-size:10px;color:#666;">NUMBER</div>
 <input id="bNums" placeholder="1 2 3">
-</div>
-
-<div>
-<div style="font-size:10px;color:#666;">AMOUNT</div>
 <input id="bAmt" type="number" placeholder="₹">
 </div>
-</div>
 
-<button onclick="addBInput()">ADD B</button>
+<button onclick="addB()">ADD B</button>
 </div>
 
 <script>
 
 let data = {};
 
-// 🔥 00–99
+// 🔥 00–99 GRID
 for(let i=0;i<100;i++){
-let num=i.toString().padStart(2,'0');
+let num = i.toString().padStart(2,'0');
 
-panel.innerHTML+=`
+panel.innerHTML += `
 <div class="box" id="b${num}">
 ${num}
 <div class="val">0</div>
 </div>`;
 }
 
-// 🔵 A/B GRID
+// A/B GRID
 for(let i=0;i<10;i++){
 
-aBox.innerHTML+=`
+aBox.innerHTML += `
 <div class="box">
 A ${i}
 <input oninput="setVal('A'+${i},this.value)">
 </div>`;
 
-bBox.innerHTML+=`
+bBox.innerHTML += `
 <div class="box">
 B ${i}
 <input oninput="setVal('B'+${i},this.value)">
 </div>`;
 }
 
-// 🔵 SET
-function setVal(num,val){
-data[num]=Number(val)||0;
+// 🔵 SET VALUE (overwrite for manual grid)
+function setVal(k,v){
+data[k]=Number(v)||0;
 update();
 }
 
-// 🟡 AUTO JODI FORMAT
-jodiNums.addEventListener("input",function(){
-let v=this.value.replace(/\D/g,'');
-this.value=(v.match(/.{1,2}/g)||[]).join(" ");
-});
-
-// 🟡 JODI ADD
+// 🟡 JODI ADD (FIXED ADD SYSTEM)
 function addJodi(){
 
 let nums=jodiNums.value.trim().split(" ");
@@ -229,80 +187,74 @@ let amt=Number(jodiAmt.value)||0;
 
 nums.forEach(n=>{
 if(n.length==1)n="0"+n;
-data[n]=amt;
+data[n]=(data[n]||0)+amt;   // ✔ ADD FIX
 });
-
-update();
 
 jodiNums.value="";
 jodiAmt.value="";
+update();
 }
 
-// 🔴 CROSSING
+// 🔴 CROSSING (FIXED ADD SYSTEM)
 function generateCross(){
 
 let a=n1.value.trim();
 let b=n2.value.trim();
 let amt=Number(crossAmt.value)||0;
-let noJodi=nojodi.checked;
+let no=nojodi.checked;
 
 for(let i of a){
 for(let j of b){
 
-if(noJodi && i===j)continue;
+if(no && i===j)continue;
 
-data[i+j]=amt;
+let key=i+j;
+data[key]=(data[key]||0)+amt;   // ✔ ADD FIX
 
 }}
-
-update();
 
 n1.value="";
 n2.value="";
 crossAmt.value="";
 nojodi.checked=false;
+
+update();
 }
 
-// 🟢 A INPUT
-aNums.addEventListener("input",function(){
-let v=this.value.replace(/\D/g,'');
-this.value=v.split("").join(" ");
-});
-
-function addAInput(){
+// 🟢 A INPUT (FIXED ADD SYSTEM)
+function addA(){
 
 let nums=aNums.value.trim().split(" ");
 let amt=Number(aAmt.value)||0;
 
 nums.forEach(n=>{
-data["A"+n]=amt;
-});
+let key="A"+(Number(n)-1);
+if(Number(n)===0) key="A9";
 
-update();
+data[key]=(data[key]||0)+amt;   // ✔ ADD FIX
+});
 
 aNums.value="";
 aAmt.value="";
+update();
 }
 
-// 🔵 B INPUT
-bNums.addEventListener("input",function(){
-let v=this.value.replace(/\D/g,'');
-this.value=v.split("").join(" ");
-});
-
-function addBInput(){
+// 🔵 B INPUT (FIXED ADD SYSTEM)
+function addB(){
 
 let nums=bNums.value.trim().split(" ");
 let amt=Number(bAmt.value)||0;
 
 nums.forEach(n=>{
-data["B"+n]=amt;
-});
+let key="B"+(Number(n)-1);
+if(Number(n)===0) key="B9";
 
-update();
+data[key]=(data[key]||0)+amt;   // ✔ ADD FIX
+});
 
 bNums.value="";
 bAmt.value="";
+update();
 }
 
 // 🔥 UPDATE SYSTEM
