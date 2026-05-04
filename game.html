@@ -10,12 +10,17 @@ body{
   padding:10px;
 }
 
-/* 00–99 GRID */
 .grid99{
   display:grid;
   grid-template-columns: repeat(10,1fr);
   gap:5px;
   margin-bottom:10px;
+}
+
+.abRow{
+  display:grid;
+  grid-template-columns: repeat(10,1fr);
+  gap:5px;
 }
 
 .box{
@@ -26,12 +31,11 @@ body{
   font-size:12px;
 }
 
-.box .val{
-  margin-top:3px;
+.val{
   font-weight:bold;
+  margin-top:3px;
 }
 
-/* SECTION */
 .section{
   background:#fff;
   padding:10px;
@@ -39,14 +43,11 @@ body{
   margin-bottom:10px;
 }
 
-/* INPUT */
 input{
   width:100%;
   padding:8px;
   margin-top:5px;
   box-sizing:border-box;
-  border-radius:6px;
-  border:1px solid #ccc;
 }
 
 button{
@@ -59,18 +60,9 @@ button{
   border-radius:6px;
 }
 
-/* A/B GRID */
-.abRow{
-  display:grid;
-  grid-template-columns: repeat(10,1fr);
-  gap:5px;
-}
-
-/* TOTAL */
 .total{
   font-size:18px;
   font-weight:bold;
-  margin-top:10px;
 }
 </style>
 </head>
@@ -78,9 +70,8 @@ button{
 <body>
 
 <h3>00 - 99</h3>
-<div class="grid99" id="panel"></div>
+<div class="grid99" id="grid"></div>
 
-<!-- A/B -->
 <div class="section">
 <h3>A (0–9)</h3>
 <div id="aBox" class="abRow"></div>
@@ -91,183 +82,63 @@ button{
 <div class="total">Total: ₹<span id="total">0</span></div>
 </div>
 
-<!-- JODI -->
-<div class="section">
-<h3>JODI INPUT</h3>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<input id="jodiNums" placeholder="12 34 56">
-<input id="jodiAmt" type="number" placeholder="₹">
-</div>
-
-<button onclick="addJodi()">ADD JODI</button>
-</div>
-
-<!-- CROSSING -->
-<div class="section">
-<h3>CROSSING</h3>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<input id="n1" placeholder="123">
-<input id="n2" placeholder="456">
-</div>
-
-<label><input type="checkbox" id="nojodi"> WITHOUT JODI</label>
-
-<input id="crossAmt" type="number" placeholder="₹">
-<button onclick="generateCross()">GENERATE CROSS</button>
-</div>
-
-<!-- A INPUT -->
-<div class="section">
-<h3>A INPUT</h3>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<input id="aNums" placeholder="1 2 3">
-<input id="aAmt" type="number" placeholder="₹">
-</div>
-
-<button onclick="addA()">ADD A</button>
-</div>
-
-<!-- B INPUT -->
-<div class="section">
-<h3>B INPUT</h3>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<input id="bNums" placeholder="1 2 3">
-<input id="bAmt" type="number" placeholder="₹">
-</div>
-
-<button onclick="addB()">ADD B</button>
-</div>
-
 <script>
 
 let data = {};
 
 // 🔥 00–99 GRID
 for(let i=0;i<100;i++){
-let num = i.toString().padStart(2,'0');
+let n=i.toString().padStart(2,'0');
 
-panel.innerHTML += `
-<div class="box" id="b${num}">
-${num}
+grid.innerHTML+=`
+<div class="box" id="n${n}">
+${n}
 <div class="val">0</div>
 </div>`;
 }
 
-// A/B GRID
+// 🔵 A/B GRID (SEPARATE STORAGE)
 for(let i=0;i<10;i++){
 
-aBox.innerHTML += `
+aBox.innerHTML+=`
 <div class="box">
-A ${i}
-<input oninput="setVal('A'+${i},this.value)">
+A${i}
+<div class="val" id="A${i}">0</div>
+<input oninput="setAB('A'+${i},this.value)">
 </div>`;
 
-bBox.innerHTML += `
+bBox.innerHTML+=`
 <div class="box">
-B ${i}
-<input oninput="setVal('B'+${i},this.value)">
+B${i}
+<div class="val" id="B${i}">0</div>
+<input oninput="setAB('B'+${i},this.value)">
 </div>`;
 }
 
-// 🔵 SET VALUE (overwrite for manual grid)
-function setVal(k,v){
+// 🔵 A/B SET
+function setAB(k,v){
 data[k]=Number(v)||0;
 update();
 }
 
-// 🟡 JODI ADD (FIXED ADD SYSTEM)
-function addJodi(){
-
-let nums=jodiNums.value.trim().split(" ");
-let amt=Number(jodiAmt.value)||0;
-
-nums.forEach(n=>{
-if(n.length==1)n="0"+n;
-data[n]=(data[n]||0)+amt;   // ✔ ADD FIX
-});
-
-jodiNums.value="";
-jodiAmt.value="";
-update();
-}
-
-// 🔴 CROSSING (FIXED ADD SYSTEM)
-function generateCross(){
-
-let a=n1.value.trim();
-let b=n2.value.trim();
-let amt=Number(crossAmt.value)||0;
-let no=nojodi.checked;
-
-for(let i of a){
-for(let j of b){
-
-if(no && i===j)continue;
-
-let key=i+j;
-data[key]=(data[key]||0)+amt;   // ✔ ADD FIX
-
-}}
-
-n1.value="";
-n2.value="";
-crossAmt.value="";
-nojodi.checked=false;
-
-update();
-}
-
-// 🟢 A INPUT (FIXED ADD SYSTEM)
-function addA(){
-
-let nums=aNums.value.trim().split(" ");
-let amt=Number(aAmt.value)||0;
-
-nums.forEach(n=>{
-let key="A"+(Number(n)-1);
-if(Number(n)===0) key="A9";
-
-data[key]=(data[key]||0)+amt;   // ✔ ADD FIX
-});
-
-aNums.value="";
-aAmt.value="";
-update();
-}
-
-// 🔵 B INPUT (FIXED ADD SYSTEM)
-function addB(){
-
-let nums=bNums.value.trim().split(" ");
-let amt=Number(bAmt.value)||0;
-
-nums.forEach(n=>{
-let key="B"+(Number(n)-1);
-if(Number(n)===0) key="B9";
-
-data[key]=(data[key]||0)+amt;   // ✔ ADD FIX
-});
-
-bNums.value="";
-bAmt.value="";
-update();
-}
-
-// 🔥 UPDATE SYSTEM
+// 🔥 JODI / CROSS / ETC (SAME LOGIC)
 function update(){
 
 let total=0;
 
-for(let i in data){
-let el=document.querySelector("#b"+i+" .val");
-if(el){
-el.innerText=data[i];
-total+=data[i];
+// A/B SHOW FIX ✔
+for(let i=0;i<10;i++){
+
+let av=data["A"+i]||0;
+let bv=data["B"+i]||0;
+
+document.getElementById("A"+i).innerText=av;
+document.getElementById("B"+i).innerText=bv;
 }
+
+// TOTAL ONLY A/B
+for(let i in data){
+total+=data[i];
 }
 
 document.getElementById("total").innerText=total;
