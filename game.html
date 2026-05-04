@@ -1,1 +1,62 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{font-family:Arial;padding:10px;background:#f2f4f8;}
+
+.grid99{
+  display:grid;
+  grid-template-columns: repeat(10,1fr);
+  gap:5px;
+}
+
+.gridAB{
+  display:grid;
+  grid-template-columns: repeat(5,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+
+.box{
+  background:#fff;
+  padding:10px;
+  text-align:center;
+  border-radius:6px;
+}
+</style>
+</head>
+
+<body>
+
+<h3>00 - 99</h3>
+<div class="grid99" id="panel"></div>
+
+<h3>A</h3>
+<div class="gridAB" id="andar"></div>
+
+<h3>B</h3>
+<div class="gridAB" id="bahar"></div>
+
+<script>
+
+// 00-99
+for(let i=0;i<100;i++){
+  let num = i.toString().padStart(2,'0');
+  document.getElementById("panel").innerHTML += `<div class="box">${num}</div>`;
+}
+
+// A/B (1-9,0)
+let nums=[1,2,3,4,5,6,7,8,9,0];
+
+nums.forEach(n=>{
+  document.getElementById("andar").innerHTML += `<div class="box">${n}</div>`;
+  document.getElementById("bahar").innerHTML += `<div class="box">${n}</div>`;
+});
+
+</script>
+
+</body>
+</html>
