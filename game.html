@@ -10,31 +10,12 @@ body{
   padding:10px;
 }
 
-.inputBox{
-  margin-bottom:10px;
-  background:#fff;
-  padding:10px;
-  border-radius:8px;
-}
-
-.inputBox input{
-  width:100%;
-  padding:8px;
-  margin-top:5px;
-  box-sizing:border-box;
-}
-
+/* 00-99 GRID */
 .grid99{
   display:grid;
   grid-template-columns: repeat(10,1fr);
   gap:5px;
-}
-
-.gridAB{
-  display:grid;
-  grid-template-columns: repeat(5,1fr);
-  gap:8px;
-  margin-top:10px;
+  margin-bottom:10px;
 }
 
 .box{
@@ -45,100 +26,163 @@ body{
   font-size:12px;
 }
 
-.box input{
-  width:100%;
-  border:none;
-  text-align:center;
+.box .val{
   margin-top:3px;
+  font-weight:bold;
+}
+
+/* SECTION BOX */
+.section{
+  background:#fff;
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:10px;
+}
+
+input{
+  width:100%;
+  padding:8px;
+  margin-top:5px;
+  box-sizing:border-box;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  background:green;
+  color:#fff;
+  border:none;
+  border-radius:6px;
 }
 
 .total{
-  margin-top:10px;
   font-size:18px;
   font-weight:bold;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- NEW INPUT BOXES -->
-<div class="inputBox">
-  <label>Numbers (auto format 05 12 25)</label>
-  <input id="numInput" type="text" placeholder="Enter numbers">
-</div>
-
-<div class="inputBox">
-  <label>Amount</label>
-  <input id="amountInput" type="number" placeholder="Enter amount">
-</div>
-
+<!-- 🔥 00–99 TOP GRID -->
 <h3>00 - 99</h3>
 <div class="grid99" id="panel"></div>
 
-<h3>A</h3>
-<div class="gridAB" id="andar"></div>
+<!-- 🔵 A / B (HARUF) -->
+<div class="section">
+<h3>A / B (HARUF)</h3>
+<div id="ab"></div>
+</div>
 
-<h3>B</h3>
-<div class="gridAB" id="bahar"></div>
+<!-- 🟡 JODI INPUT -->
+<div class="section">
+<h3>JODI INPUT</h3>
+<input id="jodiNums" placeholder="05 12 33">
+<input id="jodiAmt" type="number" placeholder="Amount">
+<button onclick="addJodi()">ADD JODI</button>
+</div>
 
+<!-- 🔴 CROSSING -->
+<div class="section">
+<h3>CROSSING</h3>
+<input id="n1" placeholder="Number 1">
+<input id="n2" placeholder="Number 2">
+
+<label>
+<input type="checkbox" id="nojodi"> WITHOUT JODI
+</label>
+
+<input id="crossAmt" type="number" placeholder="Amount">
+<button onclick="generateCross()">GENERATE CROSS</button>
+</div>
+
+<!-- TOTAL -->
 <div class="total">Total: ₹<span id="total">0</span></div>
 
 <script>
 
-// 00-99
+let data = {};
+
+// 🔥 CREATE 00–99 GRID
 for(let i=0;i<100;i++){
-  let num = i.toString().padStart(2,'0');
-  document.getElementById("panel").innerHTML += `
-    <div class="box">
-      ${num}
-      <input type="number" class="calc">
-    </div>
-  `;
+let num = i.toString().padStart(2,'0');
+
+panel.innerHTML += `
+<div class="box" id="b${num}">
+${num}
+<div class="val">0</div>
+</div>`;
 }
 
-// A/B
-let nums=[1,2,3,4,5,6,7,8,9,0];
+// 🔵 A/B GRID
+for(let i=0;i<10;i++){
+ab.innerHTML += `
+<div class="box">
+A ${i} <input oninput="setVal('A'+${i},this.value)">
+</div>
+<div class="box">
+B ${i} <input oninput="setVal('B'+${i},this.value)">
+</div>`;
+}
+
+// 🔵 SET VALUE FUNCTION
+function setVal(num,val){
+val=Number(val)||0;
+data[num]=val;
+update();
+}
+
+// 🟡 JODI ADD
+function addJodi(){
+let nums = jodiNums.value.trim().split(" ");
+let amt = Number(jodiAmt.value)||0;
 
 nums.forEach(n=>{
-  document.getElementById("andar").innerHTML += `
-    <div class="box">
-      ${n}
-      <input type="number" class="calc">
-    </div>
-  `;
-  
-  document.getElementById("bahar").innerHTML += `
-    <div class="box">
-      ${n}
-      <input type="number" class="calc">
-    </div>
-  `;
+if(n.length==1) n="0"+n;
+data[n]=amt;
 });
 
-// AUTO FORMAT (05 12 25)
-document.getElementById("numInput").addEventListener("input", function(){
-  let val = this.value.replace(/\D/g,'');
-  let formatted = val.match(/.{1,2}/g);
-  this.value = formatted ? formatted.join(" ") : "";
-  calcTotal();
-});
-
-// TOTAL CALCULATION
-function calcTotal(){
-  let sum = 0;
-
-  document.querySelectorAll(".calc").forEach(inp=>{
-    sum += Number(inp.value) || 0;
-  });
-
-  let amount = Number(document.getElementById("amountInput").value) || 0;
-
-  document.getElementById("total").innerText = sum + amount;
+update();
 }
 
-// live update
-document.addEventListener("input", calcTotal);
+// 🔴 CROSSING
+function generateCross(){
+
+let a = n1.value.trim();
+let b = n2.value.trim();
+let amt = Number(crossAmt.value)||0;
+let noJodi = nojodi.checked;
+
+for(let i of a){
+for(let j of b){
+
+if(noJodi && i===j) continue;
+
+let num = i+j;
+data[num]=amt;
+
+}}
+
+update();
+}
+
+// 🔥 UPDATE GRID + TOTAL
+function update(){
+
+let total=0;
+
+for(let i in data){
+let el = document.querySelector("#b"+i+" .val");
+if(el){
+el.innerText = data[i];
+total += data[i];
+}
+}
+
+totalEl.innerText = total;
+}
 
 </script>
 
