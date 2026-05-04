@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Client</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#f2f4f8;
+  padding:15px;
+}
+
+.box{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  border:none;
+  border-radius:20px;
+  background:#4CAF50;
+  color:white;
+  font-weight:bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+  <h3>Add Client</h3>
+
+  <input id="name" placeholder="Name">
+  <input id="mobile" placeholder="Mobile Number">
+  <input id="commission" type="number" placeholder="Commission %">
+  <input id="patti" type="number" placeholder="Patti %">
+
+  <button onclick="saveClient()">Save</button>
+</div>
+
+<script>
+
+function saveClient(){
+
+  let name = document.getElementById("name").value.trim();
+  let mobile = document.getElementById("mobile").value.trim();
+  let commission = document.getElementById("commission").value;
+  let patti = document.getElementById("patti").value;
+
+  if(!name || !mobile){
+    alert("Name aur Mobile zaruri hai");
+    return;
+  }
+
+  let clients = JSON.parse(localStorage.getItem("clients") || "[]");
+
+  let client = {
+    name: name,
+    mobile: mobile,
+    commission: Number(commission || 0),
+    patti: Number(patti || 0)
+  };
+
+  clients.push(client);
+
+  localStorage.setItem("clients", JSON.stringify(clients));
+
+  // clear fields
+  document.getElementById("name").value="";
+  document.getElementById("mobile").value="";
+  document.getElementById("commission").value="";
+  document.getElementById("patti").value="";
+
+  alert("Client Added");
+
+  // back to list
+  window.location.href = "index.html";
+}
+
+</script>
+
+</body>
+  </html>
