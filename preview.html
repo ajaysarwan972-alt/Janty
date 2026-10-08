@@ -17,8 +17,9 @@
 
 body{
     margin:0;
-    font-family:Arial,sans-serif;
+    padding:0;
     background:#f3f4f6;
+    font-family:Arial,sans-serif;
     color:#111;
 }
 
@@ -36,7 +37,7 @@ h1{
 }
 
 .filters{
-    background:white;
+    background:#fff;
     padding:15px;
     border-radius:10px;
     box-shadow:0 2px 8px rgba(0,0,0,.12);
@@ -60,24 +61,26 @@ h1{
     margin-bottom:6px;
 }
 
-select{
+select,
+input[type="date"]{
     width:100%;
-    padding:10px;
+    height:42px;
+    padding:8px 10px;
     border:1px solid #ccc;
     border-radius:6px;
+    background:#fff;
     font-size:15px;
-    background:white;
 }
 
 .info{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(4,1fr);
     gap:10px;
     margin-bottom:15px;
 }
 
 .info-box{
-    background:white;
+    background:#fff;
     padding:15px;
     border-radius:10px;
     box-shadow:0 2px 8px rgba(0,0,0,.10);
@@ -87,7 +90,7 @@ select{
 .info-title{
     font-size:14px;
     color:#555;
-    margin-bottom:6px;
+    margin-bottom:7px;
 }
 
 .info-value{
@@ -114,20 +117,20 @@ select{
 .table-box{
     width:100%;
     overflow-x:auto;
-    background:white;
+    background:#fff;
     border-radius:10px;
     box-shadow:0 2px 8px rgba(0,0,0,.12);
 }
 
 table{
     width:100%;
-    border-collapse:collapse;
     min-width:850px;
+    border-collapse:collapse;
 }
 
 thead{
     background:#222;
-    color:white;
+    color:#fff;
 }
 
 th,
@@ -160,9 +163,19 @@ td{
 }
 
 .loading{
-    text-align:center;
     padding:20px;
+    text-align:center;
     font-weight:bold;
+}
+
+.error{
+    padding:15px;
+    margin-top:10px;
+    color:#b00000;
+    background:#fff0f0;
+    border:1px solid #ffcccc;
+    border-radius:6px;
+    display:none;
 }
 
 .no-data{
@@ -172,7 +185,15 @@ td{
     color:#777;
 }
 
-@media(max-width:700px){
+@media(max-width:800px){
+
+    .info{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:550px){
 
     .container{
         padding:8px;
@@ -182,12 +203,12 @@ td{
         font-size:21px;
     }
 
-    .info{
-        grid-template-columns:1fr;
-    }
-
     .filter-box{
         min-width:100%;
+    }
+
+    .info{
+        grid-template-columns:1fr;
     }
 
 }
@@ -200,147 +221,176 @@ td{
 
 <div class="container">
 
-    <h1>USER BANK STATEMENT</h1>
-
-    <!-- FILTERS -->
-
-    <div class="filters">
-
-        <div class="filter-row">
-
-            <div class="filter-box">
-
-                <label>User ID</label>
-
-                <select id="userSelect">
-                    <option value="">Select User ID</option>
-                </select>
-
-            </div>
+<h1>USER BANK STATEMENT</h1>
 
 
-            <div class="filter-box">
+<!-- FILTER -->
 
-                <label>From Date</label>
+<div class="filters">
 
-                <select id="fromDateSelect">
-                    <option value="">Select From Date</option>
-                </select>
+    <div class="filter-row">
 
-            </div>
+        <div class="filter-box">
+
+            <label>User ID</label>
+
+            <select id="userSelect">
+
+                <option value="">
+                    Select User ID
+                </option>
+
+            </select>
+
+        </div>
 
 
-            <div class="filter-box">
+        <div class="filter-box">
 
-                <label>To Date</label>
+            <label>From Date</label>
 
-                <select id="toDateSelect">
-                    <option value="">Select To Date</option>
-                </select>
+            <input
+                type="date"
+                id="fromDate"
+            >
 
-            </div>
+        </div>
+
+
+        <div class="filter-box">
+
+            <label>To Date</label>
+
+            <input
+                type="date"
+                id="toDate"
+            >
 
         </div>
 
     </div>
 
 
-    <!-- SUMMARY -->
+    <div
+        id="errorBox"
+        class="error"
+    ></div>
 
-    <div class="info">
+</div>
 
-        <div class="info-box">
 
-            <div class="info-title">
-                Opening Balance
-            </div>
+<!-- SUMMARY -->
 
-            <div class="info-value opening" id="openingBalance">
-                ₹0
-            </div>
+<div class="info">
 
+    <div class="info-box">
+
+        <div class="info-title">
+            Opening Balance
         </div>
 
-
-        <div class="info-box">
-
-            <div class="info-title">
-                Total Debit
-            </div>
-
-            <div class="info-value debit" id="totalDebit">
-                ₹0
-            </div>
-
-        </div>
-
-
-        <div class="info-box">
-
-            <div class="info-title">
-                Total Credit
-            </div>
-
-            <div class="info-value credit" id="totalCredit">
-                ₹0
-            </div>
-
+        <div
+            class="info-value opening"
+            id="openingBalance"
+        >
+            ₹0
         </div>
 
     </div>
 
 
-    <div class="info">
+    <div class="info-box">
 
-        <div class="info-box">
+        <div class="info-title">
+            Total Debit
+        </div>
 
-            <div class="info-title">
-                Closing Balance
-            </div>
-
-            <div class="info-value closing" id="closingBalance">
-                ₹0
-            </div>
-
+        <div
+            class="info-value debit"
+            id="totalDebit"
+        >
+            ₹0
         </div>
 
     </div>
 
 
-    <!-- TABLE -->
+    <div class="info-box">
 
-    <div class="table-box">
-
-        <div id="loading" class="loading">
-            Select User ID
+        <div class="info-title">
+            Total Credit
         </div>
 
-        <table id="statementTable" style="display:none;">
-
-            <thead>
-
-                <tr>
-
-                    <th>Date / Time</th>
-
-                    <th>Particulars</th>
-
-                    <th>Debit</th>
-
-                    <th>Credit</th>
-
-                    <th>Balance</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody id="statementBody">
-            </tbody>
-
-        </table>
+        <div
+            class="info-value credit"
+            id="totalCredit"
+        >
+            ₹0
+        </div>
 
     </div>
+
+
+    <div class="info-box">
+
+        <div class="info-title">
+            Closing Balance
+        </div>
+
+        <div
+            class="info-value closing"
+            id="closingBalance"
+        >
+            ₹0
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TABLE -->
+
+<div class="table-box">
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Select User ID
+    </div>
+
+
+    <table
+        id="statementTable"
+        style="display:none;"
+    >
+
+        <thead>
+
+            <tr>
+
+                <th>Date / Time</th>
+
+                <th>Particulars</th>
+
+                <th>Debit</th>
+
+                <th>Credit</th>
+
+                <th>Balance</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="statementBody">
+
+        </tbody>
+
+    </table>
+
+</div>
 
 </div>
 
@@ -354,6 +404,13 @@ td{
 const SUPABASE_URL =
 "https://katbdbzoufiblnnsoxkk.supabase.co";
 
+
+/*
+   IMPORTANT:
+
+   YAHAN APNE PURANE WORKING CODE KI
+   SAME SUPABASE ANON KEY LAGAO.
+*/
 
 const SUPABASE_KEY =
 "YOUR_SUPABASE_ANON_KEY";
@@ -373,11 +430,11 @@ supabase.createClient(
 const userSelect =
 document.getElementById("userSelect");
 
-const fromDateSelect =
-document.getElementById("fromDateSelect");
+const fromDate =
+document.getElementById("fromDate");
 
-const toDateSelect =
-document.getElementById("toDateSelect");
+const toDate =
+document.getElementById("toDate");
 
 const statementBody =
 document.getElementById("statementBody");
@@ -387,6 +444,9 @@ document.getElementById("statementTable");
 
 const loading =
 document.getElementById("loading");
+
+const errorBox =
+document.getElementById("errorBox");
 
 const openingBalance =
 document.getElementById("openingBalance");
@@ -402,7 +462,7 @@ document.getElementById("closingBalance");
 
 
 /* =========================================================
-   ACCEPTED STATUS
+   STATUS
 ========================================================= */
 
 const ACCEPTED_STATUS = [
@@ -422,27 +482,55 @@ const ACCEPTED_STATUS = [
 
 
 /* =========================================================
-   FORMAT MONEY
+   MONEY
 ========================================================= */
 
 function money(value){
 
-    value = Number(value || 0);
+    value =
+        Number(value || 0);
 
     /*
-       User ke kehne ke according
-       minus sign display nahi hoga.
+       Minus sign display nahi karna.
     */
 
-    value = Math.abs(value);
+    value =
+        Math.abs(value);
 
-    return "₹" + value.toLocaleString("en-IN");
+    return "₹" +
+        value.toLocaleString("en-IN");
 
 }
 
 
 /* =========================================================
-   FORMAT DATE
+   ERROR
+========================================================= */
+
+function showError(message){
+
+    errorBox.style.display =
+        "block";
+
+    errorBox.innerText =
+        message;
+
+}
+
+
+function hideError(){
+
+    errorBox.style.display =
+        "none";
+
+    errorBox.innerText =
+        "";
+
+}
+
+
+/* =========================================================
+   DATE FORMAT
 ========================================================= */
 
 function formatDateTime(value){
@@ -451,48 +539,24 @@ function formatDateTime(value){
         return "";
     }
 
-    const d = new Date(value);
+    const d =
+        new Date(value);
 
     if(isNaN(d.getTime())){
         return value;
     }
 
-    return d.toLocaleString("en-IN",{
-        day:"2-digit",
-        month:"2-digit",
-        year:"numeric",
-        hour:"2-digit",
-        minute:"2-digit",
-        second:"2-digit"
-    });
-
-}
-
-
-/* =========================================================
-   DATE ONLY
-========================================================= */
-
-function dateOnly(value){
-
-    const d = new Date(value);
-
-    if(isNaN(d.getTime())){
-        return "";
-    }
-
-    const y =
-        d.getFullYear();
-
-    const m =
-        String(d.getMonth()+1)
-        .padStart(2,"0");
-
-    const day =
-        String(d.getDate())
-        .padStart(2,"0");
-
-    return `${y}-${m}-${day}`;
+    return d.toLocaleString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"2-digit",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit"
+        }
+    );
 
 }
 
@@ -512,7 +576,8 @@ async function getAllRows(
 
     let from = 0;
 
-    const step = 1000;
+    const pageSize = 1000;
+
 
     while(true){
 
@@ -520,7 +585,11 @@ async function getAllRows(
             supabaseClient
             .from(tableName)
             .select(columns)
-            .range(from,from+step-1);
+            .range(
+                from,
+                from + pageSize - 1
+            );
+
 
         if(
             filterColumn !== null &&
@@ -535,10 +604,13 @@ async function getAllRows(
 
         }
 
+
         const {
             data,
             error
-        } = await query;
+        } =
+            await query;
+
 
         if(error){
 
@@ -547,23 +619,40 @@ async function getAllRows(
                 error
             );
 
-            break;
+            throw error;
+
         }
 
-        if(!data || data.length === 0){
+
+        if(
+            !data ||
+            data.length === 0
+        ){
+
             break;
+
         }
+
 
         all =
             all.concat(data);
 
-        if(data.length < step){
+
+        if(
+            data.length <
+            pageSize
+        ){
+
             break;
+
         }
 
-        from += step;
+
+        from +=
+            pageSize;
 
     }
+
 
     return all;
 
@@ -576,170 +665,160 @@ async function getAllRows(
 
 async function loadUsers(){
 
-    userSelect.innerHTML =
-        `<option value="">Select User ID</option>`;
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-        .from("login")
-        .select("id,name,mobile,balance")
-        .order("id",{ascending:true});
-
-    if(error){
-
-        console.error(error);
-
-        loading.innerText =
-            "Users load nahi ho rahe";
-
-        return;
-
-    }
-
-    if(!data){
-        return;
-    }
-
-    data.forEach(user => {
-
-        const option =
-            document.createElement("option");
-
-        option.value =
-            user.id;
-
-        option.textContent =
-            `${user.id} - ${user.name || ""} - ${user.mobile || ""}`;
-
-        userSelect.appendChild(option);
-
-    });
-
-}
-
-
-/* =========================================================
-   LOAD DATES
-========================================================= */
-
-function loadDates(){
-
-    fromDateSelect.innerHTML =
-        `<option value="">Select From Date</option>`;
-
-    toDateSelect.innerHTML =
-        `<option value="">Select To Date</option>`;
-
-    const today =
-        new Date();
-
-    /*
-       Last 365 days
-    */
-
-    for(let i=364;i>=0;i--){
-
-        const d =
-            new Date(today);
-
-        d.setDate(
-            d.getDate()-i
-        );
-
-        const value =
-            dateOnly(d);
-
-        const display =
-            d.toLocaleDateString(
-                "en-IN",
-                {
-                    day:"2-digit",
-                    month:"2-digit",
-                    year:"numeric"
-                }
-            );
-
-
-        const option1 =
-            document.createElement("option");
-
-        option1.value =
-            value;
-
-        option1.textContent =
-            display;
-
-        fromDateSelect.appendChild(
-            option1
-        );
-
-
-        const option2 =
-            document.createElement("option");
-
-        option2.value =
-            value;
-
-        option2.textContent =
-            display;
-
-        toDateSelect.appendChild(
-            option2
-        );
-
-    }
-
-
-    /*
-       Default dono today
-    */
-
-    const todayValue =
-        dateOnly(today);
-
-    fromDateSelect.value =
-        todayValue;
-
-    toDateSelect.value =
-        todayValue;
-
-}
-
-
-/* =========================================================
-   RESET TABLE
-========================================================= */
-
-function resetStatement(){
-
-    statementBody.innerHTML = "";
-
-    statementTable.style.display =
-        "none";
+    hideError();
 
     loading.style.display =
         "block";
 
-    openingBalance.textContent =
-        "₹0";
+    loading.innerText =
+        "Users load ho rahe hain...";
 
-    totalDebit.textContent =
-        "₹0";
 
-    totalCredit.textContent =
-        "₹0";
+    userSelect.innerHTML = `
 
-    closingBalance.textContent =
-        "₹0";
+        <option value="">
+            Select User ID
+        </option>
+
+    `;
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+            .from("login")
+            .select(
+                "id,name,mobile,balance"
+            )
+            .order(
+                "id",
+                {
+                    ascending:true
+                }
+            );
+
+
+        if(error){
+
+            console.error(
+                "LOGIN ERROR:",
+                error
+            );
+
+            throw error;
+
+        }
+
+
+        if(
+            !data ||
+            data.length === 0
+        ){
+
+            loading.innerText =
+                "login table mein koi user nahi mila";
+
+            return;
+
+        }
+
+
+        data.forEach(user => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                user.id;
+
+
+            option.textContent =
+                `${user.id} - ${user.name || ""} - ${user.mobile || ""}`;
+
+
+            userSelect.appendChild(
+                option
+            );
+
+        });
+
+
+        loading.innerText =
+            "User ID select karein";
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        loading.innerText =
+            "Users load nahi ho rahe";
+
+
+        showError(
+            "Users load nahi ho rahe: " +
+            (
+                error.message ||
+                error.details ||
+                error.hint ||
+                "Supabase error"
+            )
+        );
+
+    }
 
 }
 
 
 /* =========================================================
-   GET SELECTED USER
+   SET DEFAULT DATE
+========================================================= */
+
+function setDefaultDates(){
+
+    const today =
+        new Date();
+
+
+    const year =
+        today.getFullYear();
+
+
+    const month =
+        String(
+            today.getMonth()+1
+        ).padStart(2,"0");
+
+
+    const day =
+        String(
+            today.getDate()
+        ).padStart(2,"0");
+
+
+    const todayValue =
+        `${year}-${month}-${day}`;
+
+
+    fromDate.value =
+        todayValue;
+
+    toDate.value =
+        todayValue;
+
+}
+
+
+/* =========================================================
+   GET USER
 ========================================================= */
 
 async function getUser(userId){
@@ -750,20 +829,22 @@ async function getUser(userId){
     } =
         await supabaseClient
         .from("login")
-        .select("id,name,mobile,balance,wallet")
-        .eq("id",userId)
+        .select(
+            "id,name,mobile,balance,wallet"
+        )
+        .eq(
+            "id",
+            userId
+        )
         .maybeSingle();
+
 
     if(error){
 
-        console.error(
-            "User error:",
-            error
-        );
-
-        return null;
+        throw error;
 
     }
+
 
     return data;
 
@@ -771,29 +852,31 @@ async function getUser(userId){
 
 
 /* =========================================================
-   GET DATE RANGE
+   DATE RANGE
 ========================================================= */
 
 function getDateRange(){
 
     const from =
-        fromDateSelect.value;
+        fromDate.value;
 
     const to =
-        toDateSelect.value;
+        toDate.value;
+
 
     if(!from || !to){
+
         return null;
+
     }
 
 
     /*
-       Existing game-day system ko preserve
-       karne ke liye:
+       Tumhare existing game-day system ke hisab se:
 
-       From date = 05:00 AM
+       From = 05:00 AM
 
-       To date = next day 04:59:59 AM
+       To Date ka next day = 04:59:59 AM
     */
 
     const start =
@@ -806,6 +889,7 @@ function getDateRange(){
         new Date(
             `${to}T05:00:00`
         );
+
 
     end.setDate(
         end.getDate()+1
@@ -821,24 +905,62 @@ function getDateRange(){
 
 
 /* =========================================================
-   LOAD TRANSACTIONS
+   LOAD STATEMENT
 ========================================================= */
 
 async function loadTransactions(){
 
+    hideError();
+
+
     const userId =
         userSelect.value;
+
 
     const range =
         getDateRange();
 
 
-    if(!userId || !range){
+    statementBody.innerHTML =
+        "";
 
-        resetStatement();
+    statementTable.style.display =
+        "none";
+
+
+    if(!userId){
+
+        loading.style.display =
+            "block";
 
         loading.innerText =
-            "User ID aur Date select karein";
+            "Select User ID";
+
+        return;
+
+    }
+
+
+    if(!range){
+
+        loading.style.display =
+            "block";
+
+        loading.innerText =
+            "From Date aur To Date select karein";
+
+        return;
+
+    }
+
+
+    if(range.start >= range.end){
+
+        loading.style.display =
+            "block";
+
+        loading.innerText =
+            "From Date sahi select karein";
 
         return;
 
@@ -849,565 +971,118 @@ async function loadTransactions(){
         "block";
 
     loading.innerText =
-        "Loading...";
-
-    statementTable.style.display =
-        "none";
-
-    statementBody.innerHTML =
-        "";
+        "Statement loading...";
 
 
-    /* =====================================================
-       CURRENT LOGIN BALANCE
-    ===================================================== */
+    try{
 
-    const user =
-        await getUser(userId);
+        /* =================================================
+           CURRENT USER
+        ================================================= */
 
-
-    if(!user){
-
-        loading.innerText =
-            "User nahi mila";
-
-        return;
-
-    }
-
-
-    /*
-       IMPORTANT:
-
-       Opening Balance = CURRENT login.balance
-
-       Isko transaction calculation se
-       alag se minus nahi karna.
-    */
-
-    const currentBalance =
-        Number(user.balance || 0);
-
-
-    openingBalance.textContent =
-        money(currentBalance);
-
-
-    /* =====================================================
-       TRANSACTION ARRAY
-    ===================================================== */
-
-    let transactions = [];
-
-
-    /* =====================================================
-       HISTORY
-    ===================================================== */
-
-    const historyRows =
-        await getAllRows(
-            "history",
-            "*",
-            "user_id",
-            userId
-        );
-
-
-    historyRows.forEach(row => {
-
-        if(!row.created_at){
-            return;
-        }
-
-        const dt =
-            new Date(row.created_at);
-
-        if(
-            dt < range.start ||
-            dt >= range.end
-        ){
-            return;
-        }
-
-
-        const amount =
-            Number(
-                row.total ??
-                row.amount ??
-                row.bet_amount ??
-                0
+        const user =
+            await getUser(
+                userId
             );
 
 
-        if(amount <= 0){
-            return;
+        if(!user){
+
+            throw new Error(
+                "Selected user login table mein nahi mila."
+            );
+
         }
 
 
         /*
-           History = Debit
+           IMPORTANT:
+
+           Opening Balance =
+           CURRENT login.balance
+
+           Is balance ko alag se minus
+           nahi karna.
         */
 
-        transactions.push({
-
-            id:
-                "history_"+row.id,
-
-            date:
-                row.created_at,
-
-            particulars:
-                `${row.market || "Game"} Game / Bet`,
-
-            debit:
-                amount,
-
-            credit:
-                0
-
-        });
-
-    });
-
-
-    /* =====================================================
-       WINING
-    ===================================================== */
-
-    const winingRows =
-        await getAllRows(
-            "wining",
-            "*",
-            "user_id",
-            userId
-        );
-
-
-    winingRows.forEach(row => {
-
-        if(!row.created_at){
-            return;
-        }
-
-        const dt =
-            new Date(row.created_at);
-
-        if(
-            dt < range.start ||
-            dt >= range.end
-        ){
-            return;
-        }
-
-
-        const status =
-            String(
-                row.status || ""
-            ).toLowerCase();
-
-
-        if(
-            status &&
-            !ACCEPTED_STATUS.includes(status)
-        ){
-
-            return;
-
-        }
-
-
-        const amount =
+        const currentBalance =
             Number(
-                row.amount ??
-                0
+                user.balance || 0
             );
 
 
-        if(amount <= 0){
-            return;
-        }
+        openingBalance.textContent =
+            money(currentBalance);
 
 
-        transactions.push({
+        /* =================================================
+           TRANSACTIONS
+        ================================================= */
 
-            id:
-                "wining_"+row.id,
-
-            date:
-                row.created_at,
-
-            particulars:
-                `${row.market || "Game"} Winning`,
-
-            debit:
-                0,
-
-            credit:
-                amount
-
-        });
-
-    });
+        let transactions = [];
 
 
-    /* =====================================================
-       WITHDRAW
-    ===================================================== */
+        /* =================================================
+           HISTORY
+        ================================================= */
 
-    const withdrawRows =
-        await getAllRows(
-            "withdraw_requests",
-            "*",
-            "user_id",
-            userId
-        );
-
-
-    withdrawRows.forEach(row => {
-
-        if(!row.created_at){
-            return;
-        }
-
-        const dt =
-            new Date(row.created_at);
-
-        if(
-            dt < range.start ||
-            dt >= range.end
-        ){
-            return;
-        }
-
-
-        const status =
-            String(
-                row.status || ""
-            ).toLowerCase();
-
-
-        if(
-            status &&
-            !ACCEPTED_STATUS.includes(status)
-        ){
-
-            return;
-
-        }
-
-
-        const amount =
-            Number(
-                row.amount || 0
+        const historyRows =
+            await getAllRows(
+                "history",
+                "*",
+                "user_id",
+                userId
             );
 
 
-        if(amount <= 0){
-            return;
-        }
+        historyRows.forEach(row => {
 
+            if(!row.created_at){
+                return;
+            }
 
-        transactions.push({
 
-            id:
-                "withdraw_"+row.id,
+            const dt =
+                new Date(
+                    row.created_at
+                );
 
-            date:
-                row.created_at,
 
-            particulars:
-                "Withdraw",
+            if(
+                dt < range.start ||
+                dt >= range.end
+            ){
 
-            debit:
-                amount,
+                return;
 
-            credit:
-                0
+            }
 
-        });
 
-    });
+            const amount =
+                Number(
+                    row.total ??
+                    row.amount ??
+                    row.bet_amount ??
+                    0
+                );
 
 
-    /* =====================================================
-       DEPOSITS
-    ===================================================== */
+            if(amount <= 0){
+                return;
+            }
 
-    const depositRows =
-        await getAllRows(
-            "deposits",
-            "*",
-            "user_id",
-            userId
-        );
-
-
-    depositRows.forEach(row => {
-
-        if(!row.created_at){
-            return;
-        }
-
-        const dt =
-            new Date(row.created_at);
-
-        if(
-            dt < range.start ||
-            dt >= range.end
-        ){
-            return;
-        }
-
-
-        const status =
-            String(
-                row.status || ""
-            ).toLowerCase();
-
-
-        if(
-            status &&
-            !ACCEPTED_STATUS.includes(status)
-        ){
-
-            return;
-
-        }
-
-
-        const amount =
-            Number(
-                row.amount || 0
-            );
-
-
-        if(amount <= 0){
-            return;
-        }
-
-
-        transactions.push({
-
-            id:
-                "deposit_"+row.id,
-
-            date:
-                row.created_at,
-
-            particulars:
-                "Deposit",
-
-            debit:
-                0,
-
-            credit:
-                amount
-
-        });
-
-    });
-
-
-    /* =====================================================
-       DEPOSIT REQUESTS
-    ===================================================== */
-
-    const depositRequestRows =
-        await getAllRows(
-            "deposit_requests",
-            "*",
-            "user_id",
-            userId
-        );
-
-
-    depositRequestRows.forEach(row => {
-
-        if(!row.created_at){
-            return;
-        }
-
-        const dt =
-            new Date(row.created_at);
-
-        if(
-            dt < range.start ||
-            dt >= range.end
-        ){
-            return;
-        }
-
-
-        const status =
-            String(
-                row.status || ""
-            ).toLowerCase();
-
-
-        if(
-            !ACCEPTED_STATUS.includes(status)
-        ){
-
-            return;
-
-        }
-
-
-        const amount =
-            Number(
-                row.amount || 0
-            );
-
-
-        if(amount <= 0){
-            return;
-        }
-
-
-        /*
-           Agar deposits table mein
-           same transaction aa gayi hai,
-           duplicate hata denge.
-        */
-
-        transactions.push({
-
-            id:
-                "deposit_request_"+row.id,
-
-            date:
-                row.created_at,
-
-            particulars:
-                "Deposit",
-
-            debit:
-                0,
-
-            credit:
-                amount
-
-        });
-
-    });
-
-
-    /* =====================================================
-       ADMIN HISTORY
-    ===================================================== */
-
-    const adminRows =
-        await getAllRows(
-            "admin_history",
-            "*",
-            "user_id",
-            userId
-        );
-
-
-    adminRows.forEach(row => {
-
-        if(!row.created_at){
-            return;
-        }
-
-        const dt =
-            new Date(row.created_at);
-
-        if(
-            dt < range.start ||
-            dt >= range.end
-        ){
-            return;
-        }
-
-
-        const status =
-            String(
-                row.status || ""
-            ).toLowerCase();
-
-
-        if(
-            status &&
-            !ACCEPTED_STATUS.includes(status)
-        ){
-
-            return;
-
-        }
-
-
-        const amount =
-            Number(
-                row.action_amount || 0
-            );
-
-
-        if(amount <= 0){
-            return;
-        }
-
-
-        const action =
-            String(
-                row.action_type || ""
-            ).toLowerCase();
-
-
-        /*
-           Deposit / Credit
-        */
-
-        if(
-            action.includes("deposit") ||
-            action.includes("credit") ||
-            action.includes("add")
-        ){
 
             transactions.push({
 
-                id:
-                    "admin_credit_"+row.id,
+                uniqueKey:
+                    "history_" +
+                    row.id,
 
                 date:
                     row.created_at,
 
                 particulars:
-                    "Admin Credit",
-
-                debit:
-                    0,
-
-                credit:
-                    amount
-
-            });
-
-        }
-
-
-        /*
-           Withdraw / Debit
-        */
-
-        else if(
-            action.includes("withdraw") ||
-            action.includes("debit") ||
-            action.includes("deduct") ||
-            action.includes("minus")
-        ){
-
-            transactions.push({
-
-                id:
-                    "admin_debit_"+row.id,
-
-                date:
-                    row.created_at,
-
-                particulars:
-                    "Admin Debit",
+                    `${row.market || "Game"} Game / Bet`,
 
                 debit:
                     amount,
@@ -1417,250 +1092,793 @@ async function loadTransactions(){
 
             });
 
-        }
-
-    });
+        });
 
 
-    /* =====================================================
-       REMOVE DUPLICATE TRANSACTIONS
-    ===================================================== */
+        /* =================================================
+           WINING
+        ================================================= */
 
-    const unique =
-        new Map();
-
-
-    transactions.forEach(tx => {
-
-        const key =
-            tx.id;
-
-        if(!unique.has(key)){
-
-            unique.set(
-                key,
-                tx
+        const winingRows =
+            await getAllRows(
+                "wining",
+                "*",
+                "user_id",
+                userId
             );
 
-        }
 
-    });
+        winingRows.forEach(row => {
+
+            if(!row.created_at){
+                return;
+            }
 
 
-    transactions =
-        Array.from(
-            unique.values()
+            const dt =
+                new Date(
+                    row.created_at
+                );
+
+
+            if(
+                dt < range.start ||
+                dt >= range.end
+            ){
+
+                return;
+
+            }
+
+
+            const status =
+                String(
+                    row.status || ""
+                ).toLowerCase();
+
+
+            if(
+                status &&
+                !ACCEPTED_STATUS.includes(
+                    status
+                )
+            ){
+
+                return;
+
+            }
+
+
+            const amount =
+                Number(
+                    row.amount || 0
+                );
+
+
+            if(amount <= 0){
+                return;
+            }
+
+
+            transactions.push({
+
+                uniqueKey:
+                    "wining_" +
+                    row.id,
+
+                date:
+                    row.created_at,
+
+                particulars:
+                    `${row.market || "Game"} Winning`,
+
+                debit:
+                    0,
+
+                credit:
+                    amount
+
+            });
+
+        });
+
+
+        /* =================================================
+           WITHDRAW
+        ================================================= */
+
+        const withdrawRows =
+            await getAllRows(
+                "withdraw_requests",
+                "*",
+                "user_id",
+                userId
+            );
+
+
+        withdrawRows.forEach(row => {
+
+            if(!row.created_at){
+                return;
+            }
+
+
+            const dt =
+                new Date(
+                    row.created_at
+                );
+
+
+            if(
+                dt < range.start ||
+                dt >= range.end
+            ){
+
+                return;
+
+            }
+
+
+            const status =
+                String(
+                    row.status || ""
+                ).toLowerCase();
+
+
+            if(
+                status &&
+                !ACCEPTED_STATUS.includes(
+                    status
+                )
+            ){
+
+                return;
+
+            }
+
+
+            const amount =
+                Number(
+                    row.amount || 0
+                );
+
+
+            if(amount <= 0){
+                return;
+            }
+
+
+            transactions.push({
+
+                uniqueKey:
+                    "withdraw_" +
+                    row.id,
+
+                date:
+                    row.created_at,
+
+                particulars:
+                    "Withdraw",
+
+                debit:
+                    amount,
+
+                credit:
+                    0
+
+            });
+
+        });
+
+
+        /* =================================================
+           DEPOSITS
+        ================================================= */
+
+        const depositRows =
+            await getAllRows(
+                "deposits",
+                "*",
+                "user_id",
+                userId
+            );
+
+
+        depositRows.forEach(row => {
+
+            if(!row.created_at){
+                return;
+            }
+
+
+            const dt =
+                new Date(
+                    row.created_at
+                );
+
+
+            if(
+                dt < range.start ||
+                dt >= range.end
+            ){
+
+                return;
+
+            }
+
+
+            const status =
+                String(
+                    row.status || ""
+                ).toLowerCase();
+
+
+            if(
+                status &&
+                !ACCEPTED_STATUS.includes(
+                    status
+                )
+            ){
+
+                return;
+
+            }
+
+
+            const amount =
+                Number(
+                    row.amount || 0
+                );
+
+
+            if(amount <= 0){
+                return;
+            }
+
+
+            transactions.push({
+
+                uniqueKey:
+                    "deposit_" +
+                    row.id,
+
+                date:
+                    row.created_at,
+
+                particulars:
+                    "Deposit",
+
+                debit:
+                    0,
+
+                credit:
+                    amount
+
+            });
+
+        });
+
+
+        /* =================================================
+           DEPOSIT REQUESTS
+        ================================================= */
+
+        const depositRequestRows =
+            await getAllRows(
+                "deposit_requests",
+                "*",
+                "user_id",
+                userId
+            );
+
+
+        depositRequestRows.forEach(row => {
+
+            if(!row.created_at){
+                return;
+            }
+
+
+            const dt =
+                new Date(
+                    row.created_at
+                );
+
+
+            if(
+                dt < range.start ||
+                dt >= range.end
+            ){
+
+                return;
+
+            }
+
+
+            const status =
+                String(
+                    row.status || ""
+                ).toLowerCase();
+
+
+            if(
+                !ACCEPTED_STATUS.includes(
+                    status
+                )
+            ){
+
+                return;
+
+            }
+
+
+            const amount =
+                Number(
+                    row.amount || 0
+                );
+
+
+            if(amount <= 0){
+                return;
+            }
+
+
+            transactions.push({
+
+                uniqueKey:
+                    "deposit_request_" +
+                    row.id,
+
+                date:
+                    row.created_at,
+
+                particulars:
+                    "Deposit",
+
+                debit:
+                    0,
+
+                credit:
+                    amount
+
+            });
+
+        });
+
+
+        /* =================================================
+           ADMIN HISTORY
+        ================================================= */
+
+        const adminRows =
+            await getAllRows(
+                "admin_history",
+                "*",
+                "user_id",
+                userId
+            );
+
+
+        adminRows.forEach(row => {
+
+            if(!row.created_at){
+                return;
+            }
+
+
+            const dt =
+                new Date(
+                    row.created_at
+                );
+
+
+            if(
+                dt < range.start ||
+                dt >= range.end
+            ){
+
+                return;
+
+            }
+
+
+            const status =
+                String(
+                    row.status || ""
+                ).toLowerCase();
+
+
+            if(
+                status &&
+                !ACCEPTED_STATUS.includes(
+                    status
+                )
+            ){
+
+                return;
+
+            }
+
+
+            const amount =
+                Number(
+                    row.action_amount || 0
+                );
+
+
+            if(amount <= 0){
+                return;
+            }
+
+
+            const action =
+                String(
+                    row.action_type || ""
+                ).toLowerCase();
+
+
+            if(
+                action.includes("deposit") ||
+                action.includes("credit") ||
+                action.includes("add")
+            ){
+
+                transactions.push({
+
+                    uniqueKey:
+                        "admin_credit_" +
+                        row.id,
+
+                    date:
+                        row.created_at,
+
+                    particulars:
+                        "Admin Credit",
+
+                    debit:
+                        0,
+
+                    credit:
+                        amount
+
+                });
+
+            }
+
+
+            else if(
+                action.includes("withdraw") ||
+                action.includes("debit") ||
+                action.includes("deduct") ||
+                action.includes("minus")
+            ){
+
+                transactions.push({
+
+                    uniqueKey:
+                        "admin_debit_" +
+                        row.id,
+
+                    date:
+                        row.created_at,
+
+                    particulars:
+                        "Admin Debit",
+
+                    debit:
+                        amount,
+
+                    credit:
+                        0
+
+                });
+
+            }
+
+        });
+
+
+        /* =================================================
+           DUPLICATE REMOVE
+        ================================================= */
+
+        const uniqueMap =
+            new Map();
+
+
+        transactions.forEach(tx => {
+
+            if(
+                !uniqueMap.has(
+                    tx.uniqueKey
+                )
+            ){
+
+                uniqueMap.set(
+                    tx.uniqueKey,
+                    tx
+                );
+
+            }
+
+        });
+
+
+        transactions =
+            Array.from(
+                uniqueMap.values()
+            );
+
+
+        /* =================================================
+           OLD TO NEW
+        ================================================= */
+
+        transactions.sort(
+            (a,b) =>
+                new Date(a.date) -
+                new Date(b.date)
         );
 
 
-    /* =====================================================
-       SORT OLDEST FIRST
-    ===================================================== */
+        /* =================================================
+           RUNNING BALANCE
+        ================================================= */
 
-    transactions.sort(
-        (a,b) =>
-            new Date(a.date) -
-            new Date(b.date)
-    );
+        let runningBalance =
+            currentBalance;
 
 
-    /* =====================================================
-       CALCULATE
-    ===================================================== */
-
-    let runningBalance =
-        currentBalance;
-
-    let debitTotal = 0;
-
-    let creditTotal = 0;
+        let debitTotal =
+            0;
 
 
-    statementBody.innerHTML =
-        "";
+        let creditTotal =
+            0;
 
 
-    if(transactions.length === 0){
+        /* =================================================
+           NO TRANSACTION
+        ================================================= */
 
-        loading.innerText =
-            "Is date range mein koi transaction nahi hai";
+        if(
+            transactions.length === 0
+        ){
 
-        statementTable.style.display =
-            "none";
+            loading.style.display =
+                "block";
 
-        totalDebit.textContent =
-            money(0);
-
-        totalCredit.textContent =
-            money(0);
-
-        closingBalance.textContent =
-            money(runningBalance);
-
-        return;
-
-    }
+            loading.innerText =
+                "Is date range mein koi transaction nahi hai";
 
 
-    /* =====================================================
-       EACH TRANSACTION
-    ===================================================== */
-
-    transactions.forEach(tx => {
-
-        const debit =
-            Number(tx.debit || 0);
-
-        const credit =
-            Number(tx.credit || 0);
+            totalDebit.textContent =
+                money(0);
 
 
-        debitTotal +=
-            debit;
-
-        creditTotal +=
-            credit;
+            totalCredit.textContent =
+                money(0);
 
 
-        /*
-           MAIN LOGIC
-
-           Debit  = MINUS
-           Credit = PLUS
-
-           Current balance ko dobara
-           minus nahi karna.
-        */
-
-        runningBalance =
-            runningBalance
-            - debit
-            + credit;
+            closingBalance.textContent =
+                money(runningBalance);
 
 
-        /*
-           User ne bola balance mein
-           minus sign nahi chahiye.
+            return;
 
-           Isliye display positive.
-        */
+        }
 
-        const displayBalance =
-            Math.abs(
+
+        /* =================================================
+           EACH ROW
+        ================================================= */
+
+        transactions.forEach(tx => {
+
+            const debit =
+                Number(
+                    tx.debit || 0
+                );
+
+
+            const credit =
+                Number(
+                    tx.credit || 0
+                );
+
+
+            debitTotal +=
+                debit;
+
+
+            creditTotal +=
+                credit;
+
+
+            /*
+               MAIN BALANCE LOGIC
+
+               Debit  = MINUS
+               Credit = PLUS
+
+               Example:
+
+               Opening ₹10
+
+               Deposit ₹100
+               = ₹110
+
+               Deposit ₹100
+               = ₹210
+
+               Deposit ₹500
+               = ₹710
+
+               Debit ₹100
+               = ₹610
+
+               Debit ₹100
+               = ₹510
+
+               Debit ₹490
+               = ₹20
+            */
+
+            runningBalance =
                 runningBalance
+                - debit
+                + credit;
+
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            if(credit > 0){
+
+                tr.className =
+                    "credit-row";
+
+            }
+
+
+            if(debit > 0){
+
+                tr.className =
+                    "debit-row";
+
+            }
+
+
+            tr.innerHTML = `
+
+                <td>
+                    ${formatDateTime(tx.date)}
+                </td>
+
+                <td>
+                    ${escapeHTML(tx.particulars)}
+                </td>
+
+                <td>
+                    ${
+                        debit > 0
+                        ? money(debit)
+                        : ""
+                    }
+                </td>
+
+                <td>
+                    ${
+                        credit > 0
+                        ? money(credit)
+                        : ""
+                    }
+                </td>
+
+                <td>
+                    ${money(runningBalance)}
+                </td>
+
+            `;
+
+
+            statementBody.appendChild(
+                tr
+            );
+
+        });
+
+
+        /* =================================================
+           TOTAL ROW
+        ================================================= */
+
+        const totalRow =
+            document.createElement(
+                "tr"
             );
 
 
-        const tr =
-            document.createElement("tr");
+        totalRow.className =
+            "total-row";
 
 
-        if(credit > 0){
-            tr.className =
-                "credit-row";
-        }
+        totalRow.innerHTML = `
 
-        if(debit > 0){
-            tr.className =
-                "debit-row";
-        }
-
-
-        tr.innerHTML = `
-
-            <td>
-                ${formatDateTime(tx.date)}
+            <td colspan="2">
+                TOTAL
             </td>
 
             <td>
-                ${escapeHTML(tx.particulars)}
+                ${money(debitTotal)}
             </td>
 
             <td>
-                ${
-                    debit > 0
-                    ? money(debit)
-                    : ""
-                }
+                ${money(creditTotal)}
             </td>
 
             <td>
-                ${
-                    credit > 0
-                    ? money(credit)
-                    : ""
-                }
-            </td>
-
-            <td>
-                ${money(displayBalance)}
+                ${money(runningBalance)}
             </td>
 
         `;
 
 
-        statementBody.appendChild(tr);
-
-    });
-
-
-    /* =====================================================
-       TOTAL ROW
-    ===================================================== */
-
-    const totalTr =
-        document.createElement("tr");
-
-    totalTr.className =
-        "total-row";
+        statementBody.appendChild(
+            totalRow
+        );
 
 
-    totalTr.innerHTML = `
+        /* =================================================
+           SUMMARY
+        ================================================= */
 
-        <td colspan="2">
-            TOTAL
-        </td>
-
-        <td>
-            ${money(debitTotal)}
-        </td>
-
-        <td>
-            ${money(creditTotal)}
-        </td>
-
-        <td>
-            ${money(runningBalance)}
-        </td>
-
-    `;
+        totalDebit.textContent =
+            money(debitTotal);
 
 
-    statementBody.appendChild(
-        totalTr
-    );
+        totalCredit.textContent =
+            money(creditTotal);
 
 
-    /* =====================================================
-       SUMMARY
-    ===================================================== */
-
-    totalDebit.textContent =
-        money(debitTotal);
-
-    totalCredit.textContent =
-        money(creditTotal);
+        closingBalance.textContent =
+            money(runningBalance);
 
 
-    closingBalance.textContent =
-        money(runningBalance);
+        loading.style.display =
+            "none";
 
 
-    loading.style.display =
-        "none";
+        statementTable.style.display =
+            "table";
 
-    statementTable.style.display =
-        "table";
+
+    }catch(error){
+
+        console.error(
+            "STATEMENT ERROR:",
+            error
+        );
+
+
+        loading.style.display =
+            "block";
+
+
+        loading.innerText =
+            "Statement load nahi ho rahi";
+
+
+        showError(
+            error.message ||
+            error.details ||
+            "Supabase error"
+        );
+
+    }
 
 }
 
@@ -1671,19 +1889,37 @@ async function loadTransactions(){
 
 function escapeHTML(value){
 
-    if(value === null ||
-       value === undefined){
+    if(
+        value === null ||
+        value === undefined
+    ){
 
         return "";
 
     }
 
+
     return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
@@ -1698,13 +1934,13 @@ userSelect.addEventListener(
 );
 
 
-fromDateSelect.addEventListener(
+fromDate.addEventListener(
     "change",
     loadTransactions
 );
 
 
-toDateSelect.addEventListener(
+toDate.addEventListener(
     "change",
     loadTransactions
 );
@@ -1714,7 +1950,7 @@ toDateSelect.addEventListener(
    START
 ========================================================= */
 
-loadDates();
+setDefaultDates();
 
 loadUsers();
 
