@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -122,7 +123,7 @@ select{
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:850px;
+    min-width:900px;
 }
 
 th{
@@ -262,6 +263,7 @@ tfoot td{
 
     <h1>USER BANK STATEMENT</h1>
 
+
     <div class="filters">
 
         <div class="filter-box">
@@ -391,9 +393,9 @@ tfoot td{
 
 <script>
 
-/* =========================================
+/* =========================================================
    SUPABASE
-========================================= */
+========================================================= */
 
 const SUPABASE_URL =
 "https://katbdbzoufiblnnsoxkk.supabase.co";
@@ -408,9 +410,9 @@ supabase.createClient(
 );
 
 
-/* =========================================
+/* =========================================================
    ELEMENTS
-========================================= */
+========================================================= */
 
 const userSelect =
 document.getElementById("userSelect");
@@ -429,71 +431,59 @@ document.getElementById("statementArea");
 
 
 let users = [];
-
 let selectedUser = null;
 
 
-/* =========================================
+/* =========================================================
    MONEY
-========================================= */
+========================================================= */
 
 function money(value){
 
-    value =
+    const number =
         Number(value || 0);
 
-    return value.toLocaleString(
+    return number.toLocaleString(
         "en-IN",
         {
             minimumFractionDigits:2,
             maximumFractionDigits:2
         }
     );
+}
+
+
+/* =========================================================
+   PAD
+========================================================= */
+
+function pad(n){
+
+    return String(n).padStart(2,"0");
 
 }
 
 
-/* =========================================
-   PAD
-========================================= */
+/* =========================================================
+   DATE ONLY
+========================================================= */
 
-function pad(n){
+function formatDateOnly(date){
 
-    return String(n).padStart(
-        2,
-        "0"
+    return (
+        date.getFullYear() +
+        "-" +
+        pad(date.getMonth()+1) +
+        "-" +
+        pad(date.getDate())
     );
 
 }
 
 
-/* =========================================
-   DATE ONLY
-========================================= */
-
-function formatDateOnly(date){
-
-    const y =
-        date.getFullYear();
-
-    const m =
-        pad(
-            date.getMonth()+1
-        );
-
-    const d =
-        pad(
-            date.getDate()
-        );
-
-    return `${y}-${m}-${d}`;
-
-}
-
-
-/* =========================================
+/* =========================================================
    DISPLAY DATE
-========================================= */
+========================================================= */
 
 function displayDate(date){
 
@@ -511,13 +501,14 @@ function displayDate(date){
 }
 
 
-/* =========================================
+/* =========================================================
    STATEMENT RANGE
 
+   Statement:
    05:00 AM
-   TO
+   to
    NEXT DAY 04:59:59 AM
-========================================= */
+========================================================= */
 
 function statementRange(dateString){
 
@@ -541,45 +532,9 @@ function statementRange(dateString){
 }
 
 
-/* =========================================
-   LOCAL DATETIME STRING
-
-   For timestamp without timezone
-========================================= */
-
-function localDateTimeString(date){
-
-    return (
-        `${date.getFullYear()}-` +
-        `${pad(date.getMonth()+1)}-` +
-        `${pad(date.getDate())} ` +
-        `${pad(date.getHours())}:` +
-        `${pad(date.getMinutes())}:` +
-        `${pad(date.getSeconds())}`
-    );
-
-}
-
-
-/* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeHTML(value){
-
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
-
-
-/* =========================================
+/* =========================================================
    FORMAT DATETIME
-========================================= */
+========================================================= */
 
 function formatDateTime(date){
 
@@ -613,9 +568,25 @@ function formatDateTime(date){
 }
 
 
-/* =========================================
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
    GET ALL ROWS
-========================================= */
+========================================================= */
 
 async function getAllRows(
     table,
@@ -625,7 +596,6 @@ async function getAllRows(
 ){
 
     let all = [];
-
     let from = 0;
 
     while(true){
@@ -647,7 +617,6 @@ async function getAllRows(
             from + pageSize - 1
         );
 
-
         if(error){
 
             console.error(
@@ -660,7 +629,6 @@ async function getAllRows(
 
         }
 
-
         if(
             data &&
             data.length
@@ -672,7 +640,6 @@ async function getAllRows(
 
         }
 
-
         if(
             !data ||
             data.length < pageSize
@@ -681,7 +648,6 @@ async function getAllRows(
             break;
 
         }
-
 
         from += pageSize;
 
@@ -692,9 +658,9 @@ async function getAllRows(
 }
 
 
-/* =========================================
+/* =========================================================
    LOAD USERS
-========================================= */
+========================================================= */
 
 async function loadUsers(){
 
@@ -714,7 +680,6 @@ async function loadUsers(){
             }
         );
 
-
     if(error){
 
         console.error(
@@ -730,18 +695,15 @@ async function loadUsers(){
 
     }
 
-
     users =
         data || [];
 
-
     userSelect.innerHTML =
-        `
+    `
         <option value="">
             Select User ID
         </option>
-        `;
-
+    `;
 
     users.forEach(
         user => {
@@ -751,14 +713,11 @@ async function loadUsers(){
                     "option"
                 );
 
-
             option.value =
                 user.id;
 
-
             option.textContent =
                 `${user.id} - ${user.name || ""} - ${user.mobile || ""}`;
-
 
             userSelect.appendChild(
                 option
@@ -770,23 +729,21 @@ async function loadUsers(){
 }
 
 
-/* =========================================
+/* =========================================================
    LOAD DATES
-========================================= */
+========================================================= */
 
 function loadDates(){
 
     dateSelect.innerHTML =
-        `
+    `
         <option value="">
             Select Date
         </option>
-        `;
-
+    `;
 
     const today =
         new Date();
-
 
     for(
         let i = 0;
@@ -797,25 +754,20 @@ function loadDates(){
         const d =
             new Date(today);
 
-
         d.setDate(
             today.getDate() - i
         );
-
 
         const option =
             document.createElement(
                 "option"
             );
 
-
         option.value =
             formatDateOnly(d);
 
-
         option.textContent =
             displayDate(d);
-
 
         dateSelect.appendChild(
             option
@@ -826,9 +778,1142 @@ function loadDates(){
 }
 
 
-/* =========================================
+/* =========================================================
+   NORMALIZE NUMBER
+========================================================= */
+
+function num(value){
+
+    const n =
+        Number(value);
+
+    return Number.isFinite(n)
+        ? n
+        : 0;
+
+}
+
+
+/* =========================================================
+   TRANSACTION DUPLICATE CHECK
+=========================================================
+
+   Same type
+   Same amount
+   5 seconds ke andar
+
+   = duplicate
+========================================================= */
+
+function isDuplicateTransaction(
+    transactions,
+    type,
+    amount,
+    time
+){
+
+    const newTime =
+        new Date(time).getTime();
+
+    return transactions.some(
+        t => {
+
+            const oldTime =
+                new Date(t.time).getTime();
+
+            return (
+                t.type === type &&
+                Math.abs(
+                    oldTime - newTime
+                ) <= 5000 &&
+                Math.abs(
+                    num(t.amount) -
+                    num(amount)
+                ) < 0.00001
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ADD TRANSACTION
+========================================================= */
+
+function addTransaction(
+    transactions,
+    {
+        id,
+        time,
+        particulars,
+        debit = 0,
+        credit = 0,
+        type,
+        source
+    }
+){
+
+    const d =
+        num(debit);
+
+    const c =
+        num(credit);
+
+    if(
+        d <= 0 &&
+        c <= 0
+    ){
+
+        return;
+
+    }
+
+    if(!time){
+
+        return;
+
+    }
+
+    const amount =
+        d > 0
+        ? d
+        : c;
+
+    /*
+       Important:
+
+       Same transaction ko same type,
+       same amount aur same time ke basis
+       par dobara add nahi karenge.
+    */
+
+    if(
+        isDuplicateTransaction(
+            transactions,
+            type,
+            amount,
+            time
+        )
+    ){
+
+        return;
+
+    }
+
+    transactions.push({
+
+        id:
+            id ??
+            `${source}-${time}-${amount}`,
+
+        time:
+            new Date(time),
+
+        particulars:
+            particulars || "Transaction",
+
+        debit:
+            d,
+
+        credit:
+            c,
+
+        amount,
+
+        type,
+
+        source
+
+    });
+
+}
+
+
+/* =========================================================
+   GET LEDGER TRANSACTIONS
+
+   Ye function current statement aur
+   previous transactions dono ke liye
+   same calculation use karta hai.
+========================================================= */
+
+async function getLedgerTransactions(
+    userId,
+    start,
+    end
+){
+
+    const startISO =
+        start.toISOString();
+
+    const endISO =
+        end.toISOString();
+
+    const transactions = [];
+
+
+    /* =====================================================
+       1. HISTORY / GAME BET
+       DEBIT
+    ===================================================== */
+
+    try{
+
+        const historyRows =
+            await getAllRows(
+                "history",
+                `
+                    id,
+                    user_id,
+                    market,
+                    total,
+                    created_at,
+                    status,
+                    game_date
+                `,
+                query =>
+                    query
+                        .eq(
+                            "user_id",
+                            String(userId)
+                        )
+                        .gte(
+                            "created_at",
+                            startISO
+                        )
+                        .lt(
+                            "created_at",
+                            endISO
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending:true
+                            }
+                        )
+            );
+
+        historyRows.forEach(
+            row => {
+
+                const amount =
+                    num(row.total);
+
+                if(amount <= 0){
+                    return;
+                }
+
+                addTransaction(
+                    transactions,
+                    {
+                        id:
+                            `history-${row.id}`,
+
+                        time:
+                            row.created_at,
+
+                        particulars:
+                            `${row.market || "Game"} - Game / Bet`,
+
+                        debit:
+                            amount,
+
+                        credit:
+                            0,
+
+                        type:
+                            "debit-game",
+
+                        source:
+                            "history"
+                    }
+                );
+
+            }
+        );
+
+    }catch(error){
+
+        console.error(
+            "History error:",
+            error
+        );
+
+    }
+
+
+    /* =====================================================
+       2. ACCEPTED DEPOSITS
+       CREDIT
+
+       deposits ko primary source maana gaya hai.
+    ===================================================== */
+
+    try{
+
+        const depositRows =
+            await getAllRows(
+                "deposits",
+                `
+                    id,
+                    user_id,
+                    amount,
+                    status,
+                    utr,
+                    created_at
+                `,
+                query =>
+                    query
+                        .eq(
+                            "user_id",
+                            Number(userId)
+                        )
+                        .gte(
+                            "created_at",
+                            startISO
+                        )
+                        .lt(
+                            "created_at",
+                            endISO
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending:true
+                            }
+                        )
+            );
+
+        depositRows.forEach(
+            row => {
+
+                const status =
+                    String(
+                        row.status || ""
+                    ).toLowerCase();
+
+                const allowed =
+                    [
+                        "accepted",
+                        "accept",
+                        "approved",
+                        "approve",
+                        "success",
+                        "successful",
+                        "completed",
+                        "complete",
+                        "clear",
+                        "cleared"
+                    ].includes(status);
+
+                if(!allowed){
+                    return;
+                }
+
+                const amount =
+                    num(row.amount);
+
+                if(amount <= 0){
+                    return;
+                }
+
+                addTransaction(
+                    transactions,
+                    {
+                        id:
+                            `deposit-${row.id}`,
+
+                        time:
+                            row.created_at,
+
+                        particulars:
+                            row.utr
+                            ? `Deposit - UTR ${row.utr}`
+                            : "Deposit",
+
+                        debit:
+                            0,
+
+                        credit:
+                            amount,
+
+                        type:
+                            "credit-deposit",
+
+                        source:
+                            "deposits"
+                    }
+                );
+
+            }
+        );
+
+    }catch(error){
+
+        console.error(
+            "Deposits error:",
+            error
+        );
+
+    }
+
+
+    /* =====================================================
+       3. DEPOSIT REQUESTS
+
+       Sirf tab add honge jab same accepted
+       deposit already maujood na ho.
+    ===================================================== */
+
+    try{
+
+        const requestRows =
+            await getAllRows(
+                "deposit_requests",
+                `
+                    id,
+                    user_id,
+                    amount,
+                    utr,
+                    status,
+                    created_at
+                `,
+                query =>
+                    query
+                        .eq(
+                            "user_id",
+                            Number(userId)
+                        )
+                        .gte(
+                            "created_at",
+                            startISO
+                        )
+                        .lt(
+                            "created_at",
+                            endISO
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending:true
+                            }
+                        )
+            );
+
+        requestRows.forEach(
+            row => {
+
+                const status =
+                    String(
+                        row.status || ""
+                    ).toLowerCase();
+
+                const allowed =
+                    [
+                        "accepted",
+                        "accept",
+                        "approved",
+                        "approve",
+                        "success",
+                        "successful",
+                        "completed",
+                        "complete",
+                        "clear",
+                        "cleared"
+                    ].includes(status);
+
+                if(!allowed){
+                    return;
+                }
+
+                const amount =
+                    num(row.amount);
+
+                if(amount <= 0){
+                    return;
+                }
+
+                /*
+                   Agar deposits table mein same amount/time
+                   ya same UTR already hai to request ko
+                   dobara count nahi karenge.
+                */
+
+                const requestTime =
+                    new Date(
+                        row.created_at
+                    ).getTime();
+
+                const duplicate =
+                    transactions.some(
+                        t => {
+
+                            if(
+                                t.type !==
+                                "credit-deposit"
+                            ){
+                                return false;
+                            }
+
+                            const timeDiff =
+                                Math.abs(
+                                    new Date(
+                                        t.time
+                                    ).getTime()
+                                    -
+                                    requestTime
+                                );
+
+                            if(
+                                row.utr &&
+                                String(
+                                    t.particulars
+                                ).includes(
+                                    String(row.utr)
+                                )
+                            ){
+
+                                return true;
+
+                            }
+
+                            return (
+                                Math.abs(
+                                    num(t.credit) -
+                                    amount
+                                ) < 0.00001 &&
+                                timeDiff <=
+                                5 * 60 * 1000
+                            );
+
+                        }
+                    );
+
+                if(duplicate){
+                    return;
+                }
+
+                addTransaction(
+                    transactions,
+                    {
+                        id:
+                            `deposit-request-${row.id}`,
+
+                        time:
+                            row.created_at,
+
+                        particulars:
+                            row.utr
+                            ? `Deposit - UTR ${row.utr}`
+                            : "Deposit",
+
+                        debit:
+                            0,
+
+                        credit:
+                            amount,
+
+                        type:
+                            "credit-deposit",
+
+                        source:
+                            "deposit_requests"
+                    }
+                );
+
+            }
+        );
+
+    }catch(error){
+
+        console.error(
+            "Deposit request error:",
+            error
+        );
+
+    }
+
+
+    /* =====================================================
+       4. WINING
+       CREDIT
+    ===================================================== */
+
+    try{
+
+        const winningRows =
+            await getAllRows(
+                "wining",
+                `
+                    id,
+                    user_id,
+                    market,
+                    amount,
+                    created_at,
+                    status,
+                    history_id,
+                    number,
+                    bet_amount,
+                    game_type
+                `,
+                query =>
+                    query
+                        .eq(
+                            "user_id",
+                            String(userId)
+                        )
+                        .gte(
+                            "created_at",
+                            startISO
+                        )
+                        .lt(
+                            "created_at",
+                            endISO
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending:true
+                            }
+                        )
+            );
+
+        winningRows.forEach(
+            row => {
+
+                const status =
+                    String(
+                        row.status || ""
+                    ).toLowerCase();
+
+                /*
+                   Sirf accepted winning.
+                */
+
+                if(
+                    status !== "accepted" &&
+                    status !== "accept" &&
+                    status !== "approved" &&
+                    status !== "approve" &&
+                    status !== "success" &&
+                    status !== "successful" &&
+                    status !== "completed" &&
+                    status !== "complete" &&
+                    status !== "clear" &&
+                    status !== "cleared"
+                ){
+
+                    return;
+
+                }
+
+                const amount =
+                    num(row.amount);
+
+                if(amount <= 0){
+                    return;
+                }
+
+                addTransaction(
+                    transactions,
+                    {
+                        id:
+                            `wining-${row.id}`,
+
+                        time:
+                            row.created_at,
+
+                        particulars:
+                            `${row.market || "Game"} - Winning`,
+
+                        debit:
+                            0,
+
+                        credit:
+                            amount,
+
+                        type:
+                            "credit-winning",
+
+                        source:
+                            "wining"
+                    }
+                );
+
+            }
+        );
+
+    }catch(error){
+
+        console.error(
+            "Wining error:",
+            error
+        );
+
+    }
+
+
+    /* =====================================================
+       5. WITHDRAW
+       DEBIT
+
+       Accepted / clear withdrawal hi actual
+       bank statement mein debit hoga.
+    ===================================================== */
+
+    try{
+
+        const withdrawRows =
+            await getAllRows(
+                "withdraw_requests",
+                `
+                    id,
+                    user_id,
+                    amount,
+                    status,
+                    created_at
+                `,
+                query =>
+                    query
+                        .eq(
+                            "user_id",
+                            Number(userId)
+                        )
+                        .gte(
+                            "created_at",
+                            startISO
+                        )
+                        .lt(
+                            "created_at",
+                            endISO
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending:true
+                            }
+                        )
+            );
+
+        withdrawRows.forEach(
+            row => {
+
+                const status =
+                    String(
+                        row.status || ""
+                    ).toLowerCase();
+
+                const allowed =
+                    [
+                        "accepted",
+                        "accept",
+                        "approved",
+                        "approve",
+                        "success",
+                        "successful",
+                        "completed",
+                        "complete",
+                        "clear",
+                        "cleared"
+                    ].includes(status);
+
+                if(!allowed){
+                    return;
+                }
+
+                const amount =
+                    num(row.amount);
+
+                if(amount <= 0){
+                    return;
+                }
+
+                addTransaction(
+                    transactions,
+                    {
+                        id:
+                            `withdraw-${row.id}`,
+
+                        time:
+                            row.created_at,
+
+                        particulars:
+                            "Withdraw",
+
+                        debit:
+                            amount,
+
+                        credit:
+                            0,
+
+                        type:
+                            "debit-withdraw",
+
+                        source:
+                            "withdraw_requests"
+                    }
+                );
+
+            }
+        );
+
+    }catch(error){
+
+        console.error(
+            "Withdraw error:",
+            error
+        );
+
+    }
+
+
+    /* =====================================================
+       6. ADMIN HISTORY
+
+       Manual balance adjustment.
+
+       Existing transaction ke same amount/time
+       hone par duplicate nahi banega.
+    ===================================================== */
+
+    try{
+
+        const adminRows =
+            await getAllRows(
+                "admin_history",
+                `
+                    id,
+                    user_id,
+                    admin_user_id,
+                    action_type,
+                    action_amount,
+                    old_balance,
+                    new_balance,
+                    status,
+                    created_at
+                `,
+                query =>
+                    query
+                        .eq(
+                            "user_id",
+                            Number(userId)
+                        )
+                        .gte(
+                            "created_at",
+                            startISO
+                        )
+                        .lt(
+                            "created_at",
+                            endISO
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending:true
+                            }
+                        )
+            );
+
+        adminRows.forEach(
+            row => {
+
+                const oldBalance =
+                    num(row.old_balance);
+
+                const newBalance =
+                    num(row.new_balance);
+
+                let debit = 0;
+                let credit = 0;
+
+                /*
+                   Agar old/new balance available hai,
+                   difference actual transaction maana jayega.
+                */
+
+                if(
+                    row.old_balance !== null &&
+                    row.old_balance !== undefined &&
+                    row.new_balance !== null &&
+                    row.new_balance !== undefined
+                ){
+
+                    const difference =
+                        newBalance -
+                        oldBalance;
+
+                    if(difference > 0){
+
+                        credit =
+                            difference;
+
+                    }
+
+                    if(difference < 0){
+
+                        debit =
+                            Math.abs(
+                                difference
+                            );
+
+                    }
+
+                }
+
+
+                /*
+                   Agar old/new se amount nahi mila,
+                   action_amount use karo.
+                */
+
+                if(
+                    debit === 0 &&
+                    credit === 0
+                ){
+
+                    const amount =
+                        num(
+                            row.action_amount
+                        );
+
+                    const type =
+                        String(
+                            row.action_type || ""
+                        ).toLowerCase();
+
+                    if(amount > 0){
+
+                        if(
+                            type.includes("withdraw") ||
+                            type.includes("debit") ||
+                            type.includes("remove") ||
+                            type.includes("minus")
+                        ){
+
+                            debit =
+                                amount;
+
+                        }else{
+
+                            credit =
+                                amount;
+
+                        }
+
+                    }
+
+                }
+
+                if(
+                    debit === 0 &&
+                    credit === 0
+                ){
+
+                    return;
+
+                }
+
+
+                let particulars =
+                    row.action_type ||
+                    "Wallet Transaction";
+
+                const text =
+                    String(
+                        particulars
+                    ).toLowerCase();
+
+
+                if(
+                    text.includes("withdraw") ||
+                    text.includes("debit") ||
+                    text.includes("remove") ||
+                    text.includes("minus")
+                ){
+
+                    particulars =
+                        "Withdraw";
+
+                }else if(
+                    text.includes("deposit") ||
+                    text.includes("add") ||
+                    text.includes("credit") ||
+                    text.includes("plus")
+                ){
+
+                    particulars =
+                        "Deposit";
+
+                }
+
+
+                const type =
+                    debit > 0
+                    ? "debit-admin"
+                    : "credit-admin";
+
+                const amount =
+                    debit > 0
+                    ? debit
+                    : credit;
+
+
+                /*
+                   IMPORTANT:
+
+                   Admin history agar kisi existing
+                   deposit/withdraw ke saath same transaction
+                   hai to duplicate nahi hoga.
+                */
+
+                if(
+                    isDuplicateTransaction(
+                        transactions,
+                        type,
+                        amount,
+                        row.created_at
+                    )
+                ){
+
+                    return;
+
+                }
+
+
+                /*
+                   Cross-source duplicate check.
+
+                   Admin Deposit / Withdraw aur actual
+                   Deposit / Withdraw same time+amount
+                   ho to bhi dobara count nahi hoga.
+                */
+
+                const adminDuplicate =
+                    transactions.some(
+                        t => {
+
+                            const sameAmount =
+                                Math.abs(
+                                    num(t.amount) -
+                                    amount
+                                ) < 0.00001;
+
+                            const sameTime =
+                                Math.abs(
+                                    new Date(
+                                        t.time
+                                    ).getTime()
+                                    -
+                                    new Date(
+                                        row.created_at
+                                    ).getTime()
+                                ) <=
+                                5000;
+
+                            if(
+                                !sameAmount ||
+                                !sameTime
+                            ){
+
+                                return false;
+
+                            }
+
+                            if(
+                                debit > 0 &&
+                                t.debit > 0
+                            ){
+
+                                return true;
+
+                            }
+
+                            if(
+                                credit > 0 &&
+                                t.credit > 0
+                            ){
+
+                                return true;
+
+                            }
+
+                            return false;
+
+                        }
+                    );
+
+                if(adminDuplicate){
+
+                    return;
+
+                }
+
+
+                transactions.push({
+
+                    id:
+                        `admin-${row.id}`,
+
+                    time:
+                        new Date(
+                            row.created_at
+                        ),
+
+                    particulars,
+
+                    debit,
+
+                    credit,
+
+                    amount,
+
+                    type,
+
+                    source:
+                        "admin_history"
+
+                });
+
+            }
+        );
+
+    }catch(error){
+
+        /*
+           admin_history table unavailable ho
+           to statement baaki tables se chalega.
+        */
+
+        console.log(
+            "Admin history unavailable:",
+            error
+        );
+
+    }
+
+
+    /* =====================================================
+       FINAL SORT
+    ===================================================== */
+
+    transactions.sort(
+        (a,b) =>
+            new Date(a.time).getTime()
+            -
+            new Date(b.time).getTime()
+    );
+
+
+    return transactions;
+
+}
+
+
+/* =========================================================
    USER CHANGE
-========================================= */
+========================================================= */
 
 userSelect.addEventListener(
     "change",
@@ -837,14 +1922,12 @@ userSelect.addEventListener(
         const id =
             this.value;
 
-
         selectedUser =
             users.find(
                 u =>
                     String(u.id) ===
                     String(id)
             );
-
 
         if(!selectedUser){
 
@@ -855,11 +1938,11 @@ userSelect.addEventListener(
                 "none";
 
             statementArea.innerHTML =
-                `
+            `
                 <div class="empty">
                     User ID और Statement Date select करें
                 </div>
-                `;
+            `;
 
             return;
 
@@ -898,9 +1981,9 @@ userSelect.addEventListener(
 );
 
 
-/* =========================================
+/* =========================================================
    DATE CHANGE
-========================================= */
+========================================================= */
 
 dateSelect.addEventListener(
     "change",
@@ -919,9 +2002,9 @@ dateSelect.addEventListener(
 );
 
 
-/* =========================================
+/* =========================================================
    LOAD STATEMENT
-========================================= */
+========================================================= */
 
 async function loadStatement(){
 
@@ -936,18 +2019,21 @@ async function loadStatement(){
 
 
     statementArea.innerHTML =
-        `
+    `
         <div class="loading">
             Loading statement...
         </div>
-        `;
+    `;
+
+
+    openingBox.style.display =
+        "none";
 
 
     try{
 
         const userId =
             userSelect.value;
-
 
         const selectedDate =
             dateSelect.value;
@@ -958,1205 +2044,73 @@ async function loadStatement(){
                 selectedDate
             );
 
-
         const start =
             range.start;
-
 
         const end =
             range.end;
 
 
-        const startISO =
-            start.toISOString();
+        /* =================================================
+           CURRENT DAY TRANSACTIONS
+        ================================================= */
 
-
-        const endISO =
-            end.toISOString();
-
-
-        const startLocal =
-            localDateTimeString(
-                start
-            );
-
-
-        const endLocal =
-            localDateTimeString(
+        const currentTransactions =
+            await getLedgerTransactions(
+                userId,
+                start,
                 end
             );
 
 
-        let transactions = [];
+        /* =================================================
+           PREVIOUS TRANSACTIONS
 
+           Start se pehle ka poora ledger.
+           Isi se exact opening balance niklega.
+        ================================================= */
 
-        /* =====================================
-           1. HISTORY
-           GAME / BET = DEBIT
-        ===================================== */
-
-        const historyRows =
-            await getAllRows(
-                "history",
-                `
-                id,
-                user_id,
-                market,
-                data,
-                total,
-                created_at,
-                status,
-                game_date
-                `,
-                query =>
-                    query
-                    .eq(
-                        "user_id",
-                        String(userId)
-                    )
-                    .gte(
-                        "game_date",
-                        selectedDate
-                    )
-                    .lt(
-                        "game_date",
-                        formatDateOnly(end)
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending:true
-                        }
-                    )
+        const beginning =
+            new Date(
+                "2000-01-01T00:00:00"
             );
 
 
-        historyRows.forEach(
-            row => {
-
-                const amount =
-                    Number(
-                        row.total || 0
-                    );
-
-
-                if(amount <= 0){
-
-                    return;
-
-                }
+        const previousTransactions =
+            await getLedgerTransactions(
+                userId,
+                beginning,
+                start
+            );
 
 
-                transactions.push({
+        /* =================================================
+           EXACT OPENING BALANCE
 
-                    time:
-                        new Date(
-                            row.created_at
-                        ),
+           Sab previous credits
+           -
+           Sab previous debits
+        ================================================= */
 
-                    particulars:
-                        `${row.market || "Game"} - Game / Bet`,
+        let openingBalance = 0;
 
-                    debit:
-                        amount,
 
-                    credit:
-                        0,
+        previousTransactions.forEach(
+            t => {
 
-                    source:
-                        "history",
+                openingBalance +=
+                    num(t.credit);
 
-                    sourceId:
-                        row.id
-
-                });
+                openingBalance -=
+                    num(t.debit);
 
             }
         );
 
 
-        /* =====================================
-           2. DEPOSITS
-           CREDIT
-        ===================================== */
-
-        const depositRows =
-            await getAllRows(
-                "deposits",
-                `
-                id,
-                user_id,
-                amount,
-                status,
-                utr,
-                created_at
-                `,
-                query =>
-                    query
-                    .eq(
-                        "user_id",
-                        Number(userId)
-                    )
-                    .gte(
-                        "created_at",
-                        startLocal
-                    )
-                    .lt(
-                        "created_at",
-                        endLocal
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending:true
-                        }
-                    )
-            );
-
-
-        depositRows.forEach(
-            row => {
-
-                const status =
-                    String(
-                        row.status || ""
-                    ).toLowerCase();
-
-
-                const allowed =
-                    [
-                        "accepted",
-                        "accept",
-                        "approved",
-                        "approve",
-                        "success",
-                        "successful",
-                        "completed",
-                        "complete",
-                        "clear",
-                        "cleared"
-                    ].includes(status);
-
-
-                if(!allowed){
-
-                    return;
-
-                }
-
-
-                const amount =
-                    Number(
-                        row.amount || 0
-                    );
-
-
-                if(amount <= 0){
-
-                    return;
-
-                }
-
-
-                transactions.push({
-
-                    time:
-                        new Date(
-                            row.created_at
-                        ),
-
-                    particulars:
-                        "Deposit",
-
-                    debit:
-                        0,
-
-                    credit:
-                        amount,
-
-                    source:
-                        "deposit",
-
-                    sourceId:
-                        row.id,
-
-                    utr:
-                        row.utr || ""
-
-                });
-
-            }
-        );
-
-
-        /* =====================================
-           3. DEPOSIT REQUESTS
-           CREDIT
-
-           Duplicate deposit ko avoid karega.
-        ===================================== */
-
-        const depositRequestRows =
-            await getAllRows(
-                "deposit_requests",
-                `
-                id,
-                user_id,
-                amount,
-                utr,
-                status,
-                created_at
-                `,
-                query =>
-                    query
-                    .eq(
-                        "user_id",
-                        Number(userId)
-                    )
-                    .gte(
-                        "created_at",
-                        startLocal
-                    )
-                    .lt(
-                        "created_at",
-                        endLocal
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending:true
-                        }
-                    )
-            );
-
-
-        depositRequestRows.forEach(
-            row => {
-
-                const status =
-                    String(
-                        row.status || ""
-                    ).toLowerCase();
-
-
-                const allowed =
-                    [
-                        "accepted",
-                        "accept",
-                        "approved",
-                        "approve",
-                        "success",
-                        "successful",
-                        "completed",
-                        "complete",
-                        "clear",
-                        "cleared"
-                    ].includes(status);
-
-
-                if(!allowed){
-
-                    return;
-
-                }
-
-
-                const amount =
-                    Number(
-                        row.amount || 0
-                    );
-
-
-                if(amount <= 0){
-
-                    return;
-
-                }
-
-
-                const duplicate =
-                    transactions.some(
-                        t =>
-
-                            t.source ===
-                            "deposit"
-
-                            &&
-
-                            (
-
-                                (
-                                    row.utr &&
-                                    t.utr &&
-                                    String(row.utr) ===
-                                    String(t.utr)
-                                )
-
-                                ||
-
-                                (
-                                    Number(t.credit) ===
-                                    amount
-
-                                    &&
-
-                                    Math.abs(
-                                        t.time.getTime() -
-                                        new Date(
-                                            row.created_at
-                                        ).getTime()
-                                    ) <
-                                    5 * 60 * 1000
-                                )
-
-                            )
-                    );
-
-
-                if(duplicate){
-
-                    return;
-
-                }
-
-
-                transactions.push({
-
-                    time:
-                        new Date(
-                            row.created_at
-                        ),
-
-                    particulars:
-                        "Deposit",
-
-                    debit:
-                        0,
-
-                    credit:
-                        amount,
-
-                    source:
-                        "deposit-request",
-
-                    sourceId:
-                        row.id,
-
-                    utr:
-                        row.utr || ""
-
-                });
-
-            }
-        );
-
-
-        /* =====================================
-           4. WINING TABLE
-           WINNING = CREDIT
-
-           Exact wining table columns:
-           id, user_id, market, amount, created_at,
-           number, bet_amount, status, history_id, game_type
-        ===================================== */
-
-        const winningRows =
-            await getAllRows(
-                "wining",
-                `
-                id,
-                user_id,
-                market,
-                amount,
-                created_at,
-                status,
-                history_id,
-                number,
-                bet_amount,
-                game_type
-                `,
-                query =>
-                    query
-                    .eq(
-                        "user_id",
-                        String(userId)
-                    )
-                    .eq(
-                        "status",
-                        "accepted"
-                    )
-                    .gte(
-                        "created_at",
-                        startISO
-                    )
-                    .lt(
-                        "created_at",
-                        endISO
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending:true
-                        }
-                    )
-            );
-
-
-        console.log(
-            "WINING ROWS:",
-            winningRows
-        );
-
-
-        winningRows.forEach(
-            row => {
-
-                const amount =
-                    Number(
-                        row.amount || 0
-                    );
-
-
-                if(amount <= 0){
-                    return;
-                }
-
-
-                const market =
-                    row.market ||
-                    "Game";
-
-
-                if(!row.created_at){
-                    return;
-                }
-
-
-                transactions.push({
-
-                    time:
-                        new Date(
-                            row.created_at
-                        ),
-
-                    particulars:
-                        `${market} - Winning`,
-
-                    debit:
-                        0,
-
-                    credit:
-                        amount,
-
-                    source:
-                        "wining",
-
-                    sourceId:
-                        row.id
-
-                });
-
-            }
-        );
-
-
-        /* =====================================
-           5. WITHDRAW
-           DEBIT
-        ===================================== */
-
-        try{
-
-            const withdrawRows =
-                await getAllRows(
-                    "withdraw_requests",
-                    `
-                    id,
-                    user_id,
-                    amount,
-                    status,
-                    created_at
-                    `,
-                    query =>
-                        query
-                        .eq(
-                            "user_id",
-                            Number(userId)
-                        )
-                        .gte(
-                            "created_at",
-                            startLocal
-                        )
-                        .lt(
-                            "created_at",
-                            endLocal
-                        )
-                        .order(
-                            "created_at",
-                            {
-                                ascending:true
-                            }
-                        )
-                );
-
-
-            withdrawRows.forEach(
-                row => {
-
-                    const status =
-                        String(
-                            row.status || ""
-                        ).toLowerCase();
-
-
-                    const allowed =
-                        [
-                            "accepted",
-                            "accept",
-                            "approved",
-                            "approve",
-                            "success",
-                            "successful",
-                            "completed",
-                            "complete",
-                            "clear",
-                            "cleared"
-                        ].includes(status);
-
-
-                    if(!allowed){
-
-                        return;
-
-                    }
-
-
-                    const amount =
-                        Number(
-                            row.amount || 0
-                        );
-
-
-                    if(amount <= 0){
-
-                        return;
-
-                    }
-
-
-                    transactions.push({
-
-                        time:
-                            new Date(
-                                row.created_at
-                            ),
-
-                        particulars:
-                            "Withdraw",
-
-                        debit:
-                            amount,
-
-                        credit:
-                            0,
-
-                        source:
-                            "withdraw",
-
-                        sourceId:
-                            row.id
-
-                    });
-
-                }
-            );
-
-        }catch(error){
-
-            console.log(
-                "Withdraw table not available:",
-                error
-            );
-
-        }
-
-
-        /* =====================================
-           6. ADMIN HISTORY
-        ===================================== */
-
-        try{
-
-            const adminRows =
-                await getAllRows(
-                    "admin_history",
-                    `
-                    id,
-                    user_id,
-                    admin_user_id,
-                    action_type,
-                    action_amount,
-                    old_balance,
-                    new_balance,
-                    status,
-                    created_at
-                    `,
-                    query =>
-                        query
-                        .eq(
-                            "user_id",
-                            Number(userId)
-                        )
-                        .gte(
-                            "created_at",
-                            startISO
-                        )
-                        .lt(
-                            "created_at",
-                            endISO
-                        )
-                        .order(
-                            "created_at",
-                            {
-                                ascending:true
-                            }
-                        )
-                );
-
-
-            adminRows.forEach(
-                row => {
-
-                    const oldBalance =
-                        Number(
-                            row.old_balance ?? 0
-                        );
-
-
-                    const newBalance =
-                        Number(
-                            row.new_balance ?? 0
-                        );
-
-
-                    let debit = 0;
-
-                    let credit = 0;
-
-
-                    /*
-                       Balance difference ko
-                       transaction maana jayega.
-                    */
-
-                    if(
-                        Number.isFinite(
-                            oldBalance
-                        ) &&
-                        Number.isFinite(
-                            newBalance
-                        )
-                    ){
-
-                        const difference =
-                            newBalance -
-                            oldBalance;
-
-
-                        if(difference > 0){
-
-                            credit =
-                                difference;
-
-                        }
-
-
-                        if(difference < 0){
-
-                            debit =
-                                Math.abs(
-                                    difference
-                                );
-
-                        }
-
-                    }
-
-
-                    /*
-                       Agar old/new balance available
-                       nahi hua to action_amount use.
-                    */
-
-                    if(
-                        debit === 0 &&
-                        credit === 0
-                    ){
-
-                        const amount =
-                            Number(
-                                row.action_amount || 0
-                            );
-
-
-                        const type =
-                            String(
-                                row.action_type || ""
-                            ).toLowerCase();
-
-
-                        if(amount > 0){
-
-                            if(
-                                type.includes("withdraw") ||
-                                type.includes("debit") ||
-                                type.includes("remove") ||
-                                type.includes("minus")
-                            ){
-
-                                debit =
-                                    amount;
-
-                            }else{
-
-                                credit =
-                                    amount;
-
-                            }
-
-                        }
-
-                    }
-
-
-                    if(
-                        debit === 0 &&
-                        credit === 0
-                    ){
-
-                        return;
-
-                    }
-
-
-                    let particulars =
-                        row.action_type ||
-                        "Wallet Transaction";
-
-
-                    const typeText =
-                        String(
-                            particulars
-                        ).toLowerCase();
-
-
-                    if(
-                        typeText.includes("withdraw")
-                    ){
-
-                        particulars =
-                            "Withdraw";
-
-                    }else if(
-                        typeText.includes("deposit") ||
-                        typeText.includes("add") ||
-                        typeText.includes("credit")
-                    ){
-
-                        particulars =
-                            "Deposit";
-
-                    }
-
-
-                    /*
-                       Avoid obvious duplicate
-                    */
-
-                    const duplicate =
-                        transactions.some(
-                            t =>
-
-                                Math.abs(
-                                    t.time.getTime() -
-                                    new Date(
-                                        row.created_at
-                                    ).getTime()
-                                ) <
-                                5000
-
-                                &&
-
-                                Number(t.debit) ===
-                                Number(debit)
-
-                                &&
-
-                                Number(t.credit) ===
-                                Number(credit)
-                        );
-
-
-                    if(duplicate){
-
-                        return;
-
-                    }
-
-
-                    transactions.push({
-
-                        time:
-                            new Date(
-                                row.created_at
-                            ),
-
-                        particulars,
-
-                        debit,
-
-                        credit,
-
-                        source:
-                            "admin-history",
-
-                        sourceId:
-                            row.id
-
-                    });
-
-                }
-            );
-
-        }catch(error){
-
-            console.log(
-                "Admin history error:",
-                error
-            );
-
-        }
-
-
-        /* =====================================
-           SORT
-        ===================================== */
-
-        transactions.sort(
-            (a,b) =>
-                a.time.getTime() -
-                b.time.getTime()
-        );
-
-
-        /* =====================================
-           CURRENT WALLET
-        ===================================== */
-
-        const currentWallet =
-            Number(
-                selectedUser.balance || 0
-            );
-
-
-        /* =====================================
-           FUTURE TRANSACTIONS
-           OPENING BALANCE
-        ===================================== */
-
-        let futureDebit = 0;
-
-        let futureCredit = 0;
-
-
         /*
-           Future HISTORY
+           Floating point correction
         */
-
-        try{
-
-            const futureHistory =
-                await getAllRows(
-                    "history",
-                    `
-                    id,
-                    user_id,
-                    total,
-                    game_date,
-                    created_at
-                    `,
-                    query =>
-                        query
-                        .eq(
-                            "user_id",
-                            String(userId)
-                        )
-                        .gte(
-                            "game_date",
-                            formatDateOnly(end)
-                        )
-                );
-
-
-            futureHistory.forEach(
-                row => {
-
-                    futureDebit +=
-                        Number(
-                            row.total || 0
-                        );
-
-                }
-            );
-
-        }catch(error){
-
-            console.log(
-                "Future history error:",
-                error
-            );
-
-        }
-
-
-        /*
-           Future deposits
-        */
-
-        try{
-
-            const futureDeposits =
-                await getAllRows(
-                    "deposits",
-                    `
-                    id,
-                    user_id,
-                    amount,
-                    status,
-                    created_at
-                    `,
-                    query =>
-                        query
-                        .eq(
-                            "user_id",
-                            Number(userId)
-                        )
-                        .gte(
-                            "created_at",
-                            endLocal
-                        )
-                );
-
-
-            futureDeposits.forEach(
-                row => {
-
-                    const status =
-                        String(
-                            row.status || ""
-                        ).toLowerCase();
-
-
-                    if(
-                        [
-                            "accepted",
-                            "accept",
-                            "approved",
-                            "approve",
-                            "success",
-                            "successful",
-                            "completed",
-                            "complete",
-                            "clear",
-                            "cleared"
-                        ].includes(status)
-                    ){
-
-                        futureCredit +=
-                            Number(
-                                row.amount || 0
-                            );
-
-                    }
-
-                }
-            );
-
-        }catch(error){
-
-            console.log(
-                "Future deposits error:",
-                error
-            );
-
-        }
-
-
-        /*
-           Future winning
-        */
-
-        try{
-
-            const futureWinning =
-                await getAllRows(
-                    "wining",
-                    "*",
-                    query =>
-                        query
-                        .gte(
-                            "created_at",
-                            endLocal
-                        )
-                );
-
-
-            futureWinning.forEach(
-                row => {
-
-                    const rowUserId =
-                        row.user_id ??
-                        row.userid ??
-                        row.userId;
-
-
-                    if(
-                        String(rowUserId) !==
-                        String(userId)
-                    ){
-
-                        return;
-
-                    }
-
-
-                    const amount =
-                        Number(
-                            row.amount ??
-                            row.win_amount ??
-                            row.winning_amount ??
-                            row.win ??
-                            0
-                        );
-
-
-                    if(amount > 0){
-
-                        futureCredit +=
-                            amount;
-
-                    }
-
-                }
-            );
-
-        }catch(error){
-
-            console.log(
-                "Future wining error:",
-                error
-            );
-
-        }
-
-
-        /*
-           Future withdraw
-        */
-
-        try{
-
-            const futureWithdraw =
-                await getAllRows(
-                    "withdraw_requests",
-                    `
-                    id,
-                    user_id,
-                    amount,
-                    status,
-                    created_at
-                    `,
-                    query =>
-                        query
-                        .eq(
-                            "user_id",
-                            Number(userId)
-                        )
-                        .gte(
-                            "created_at",
-                            endLocal
-                        )
-                );
-
-
-            futureWithdraw.forEach(
-                row => {
-
-                    const status =
-                        String(
-                            row.status || ""
-                        ).toLowerCase();
-
-
-                    if(
-                        [
-                            "accepted",
-                            "accept",
-                            "approved",
-                            "approve",
-                            "success",
-                            "successful",
-                            "completed",
-                            "complete",
-                            "clear",
-                            "cleared"
-                        ].includes(status)
-                    ){
-
-                        futureDebit +=
-                            Number(
-                                row.amount || 0
-                            );
-
-                    }
-
-                }
-            );
-
-        }catch(error){
-
-            console.log(
-                "Future withdraw error:",
-                error
-            );
-
-        }
-
-
-        /*
-           Opening balance
-
-           Current wallet
-           - future credits
-           + future debits
-        */
-
-        let openingBalance =
-            currentWallet -
-            futureCredit +
-            futureDebit;
-
-
-        if(
-            !Number.isFinite(
-                openingBalance
-            )
-        ){
-
-            openingBalance = 0;
-
-        }
-
 
         if(
             Math.abs(
@@ -2179,73 +2133,125 @@ async function loadStatement(){
             `₹${money(openingBalance)}`;
 
 
-        /* =====================================
-           NO TRANSACTIONS
-        ===================================== */
+        /* =================================================
+           NO CURRENT TRANSACTIONS
+
+           Opening balance phir bhi dikhega.
+        ================================================= */
 
         if(
-            transactions.length === 0
+            currentTransactions.length === 0
         ){
 
             statementArea.innerHTML =
-                `
+            `
                 <div class="empty">
                     Is date par koi transaction nahi mila.
                 </div>
-                `;
+
+                <div class="summary">
+
+                    <div class="summary-row">
+
+                        <div class="summary-title">
+                            Opening Balance
+                        </div>
+
+                        <div class="summary-value">
+                            ₹${money(openingBalance)}
+                        </div>
+
+                    </div>
+
+                    <div class="summary-row">
+
+                        <div class="summary-title">
+                            Total Debit
+                        </div>
+
+                        <div class="summary-value">
+                            ₹0.00
+                        </div>
+
+                    </div>
+
+                    <div class="summary-row">
+
+                        <div class="summary-title">
+                            Total Credit
+                        </div>
+
+                        <div class="summary-value">
+                            ₹0.00
+                        </div>
+
+                    </div>
+
+                    <div class="summary-row">
+
+                        <div class="summary-title">
+                            Closing Balance
+                        </div>
+
+                        <div class="summary-value">
+                            ₹${money(openingBalance)}
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
 
             return;
 
         }
 
 
-        /* =====================================
+        /* =================================================
            RUNNING BALANCE
-        ===================================== */
+        ================================================= */
 
         let runningBalance =
             openingBalance;
 
 
-        let totalDebit = 0;
+        let totalDebit =
+            0;
 
-        let totalCredit = 0;
+        let totalCredit =
+            0;
 
 
-        let rowsHTML = "";
+        let rowsHTML =
+            "";
 
 
-        transactions.forEach(
+        currentTransactions.forEach(
             t => {
 
                 const debit =
-                    Number(
-                        t.debit || 0
-                    );
-
+                    num(t.debit);
 
                 const credit =
-                    Number(
-                        t.credit || 0
-                    );
+                    num(t.credit);
 
 
                 totalDebit +=
                     debit;
-
 
                 totalCredit +=
                     credit;
 
 
                 /*
-                   DEBIT = MINUS
-                   CREDIT = PLUS
+                   Running balance
                 */
 
                 runningBalance =
-                    runningBalance -
-                    debit +
+                    runningBalance
+                    -
+                    debit
+                    +
                     credit;
 
 
@@ -2261,7 +2267,7 @@ async function loadStatement(){
 
 
                 rowsHTML +=
-                    `
+                `
                     <tr>
 
                         <td class="date-col">
@@ -2273,46 +2279,54 @@ async function loadStatement(){
                         </td>
 
                         <td class="money debit">
+
                             ${
                                 debit > 0
                                 ? "₹" + money(debit)
                                 : "-"
                             }
+
                         </td>
 
                         <td class="money credit">
+
                             ${
                                 credit > 0
                                 ? "₹" + money(credit)
                                 : "-"
                             }
+
                         </td>
 
                         <td class="balance">
+
                             ₹${money(runningBalance)}
+
                         </td>
 
                     </tr>
-                    `;
+                `;
 
             }
         );
 
 
-        /* =====================================
+        /* =================================================
            CLOSING BALANCE
-        ===================================== */
+
+           EXACT SAME RUNNING BALANCE
+        ================================================= */
 
         const closingBalance =
             runningBalance;
 
 
-        /* =====================================
-           STATEMENT HTML
-        ===================================== */
+        /* =================================================
+           FINAL STATEMENT
+        ================================================= */
 
         statementArea.innerHTML =
-            `
+        `
 
             <div class="table-wrap">
 
@@ -2365,22 +2379,22 @@ async function loadStatement(){
                                 TOTAL
                             </td>
 
-                            <td
-                                class="money debit"
-                            >
+                            <td class="money debit">
+
                                 ₹${money(totalDebit)}
+
                             </td>
 
-                            <td
-                                class="money credit"
-                            >
+                            <td class="money credit">
+
                                 ₹${money(totalCredit)}
+
                             </td>
 
-                            <td
-                                class="balance"
-                            >
+                            <td class="balance">
+
                                 ₹${money(closingBalance)}
+
                             </td>
 
                         </tr>
@@ -2447,7 +2461,7 @@ async function loadStatement(){
 
             </div>
 
-            `;
+        `;
 
 
     }catch(error){
@@ -2459,22 +2473,29 @@ async function loadStatement(){
 
 
         statementArea.innerHTML =
-            `
+        `
             <div class="error">
+
                 Statement load karte waqt error aaya.
+
                 <br><br>
-                Console me error check karein.
+
+                ${escapeHTML(
+                    error?.message ||
+                    "Unknown error"
+                )}
+
             </div>
-            `;
+        `;
 
     }
 
 }
 
 
-/* =========================================
+/* =========================================================
    START
-========================================= */
+========================================================= */
 
 loadUsers();
 
@@ -2483,4 +2504,5 @@ loadDates();
 </script>
 
 </body>
+
 </html>
