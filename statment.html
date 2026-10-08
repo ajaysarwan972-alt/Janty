@@ -1,0 +1,3297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>User Statement</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eeeeee;
+    color:#222;
+}
+
+.container{
+    width:96%;
+    max-width:1100px;
+    margin:15px auto 40px;
+}
+
+.header{
+    background:#111;
+    color:white;
+    padding:16px;
+    border-radius:12px;
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.header h2{
+    margin:0;
+}
+
+.search-box{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    text-align:left;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.dropdown{
+    width:100%;
+    padding:13px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+    background:white;
+    margin-bottom:12px;
+}
+
+.btn-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+button{
+    border:none;
+    border-radius:8px;
+    padding:12px 18px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.search-btn{
+    background:#e60000;
+    color:white;
+}
+
+.csv-btn{
+    background:#168a3b;
+    color:white;
+}
+
+.print-btn{
+    background:#333;
+    color:white;
+}
+
+.info{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:15px;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+
+.user-title{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.user-line{
+    margin:5px 0;
+}
+
+.summary{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+    text-align:center;
+}
+
+.card-title{
+    font-size:13px;
+    color:#666;
+    margin-bottom:8px;
+}
+
+.card-value{
+    font-size:21px;
+    font-weight:bold;
+}
+
+.opening{
+    color:#444;
+}
+
+.add{
+    color:#168a3b;
+}
+
+.withdraw{
+    color:#d00000;
+}
+
+.game{
+    color:#7b2cbf;
+}
+
+.win{
+    color:#0066cc;
+}
+
+.commission{
+    color:#e67e00;
+}
+
+.closing{
+    color:#111;
+}
+
+.section{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+    margin-bottom:15px;
+}
+
+.section h3{
+    margin:0 0 12px;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:700px;
+}
+
+th,
+td{
+    border:1px solid #ddd;
+    padding:9px;
+    text-align:center;
+    font-size:13px;
+}
+
+th{
+    background:#222;
+    color:white;
+}
+
+.market-table{
+    min-width:500px;
+}
+
+.loading{
+    display:none;
+    text-align:center;
+    padding:20px;
+    font-weight:bold;
+}
+
+.error{
+    background:#ffe1e1;
+    color:#a00000;
+    padding:12px;
+    border-radius:8px;
+    display:none;
+    margin-bottom:15px;
+}
+
+.total-row{
+    font-weight:bold;
+    background:#f1f1f1;
+}
+
+@media(max-width:800px){
+
+    .summary{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:500px){
+
+    .container{
+        width:94%;
+    }
+
+    .summary{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .card{
+        padding:12px 5px;
+    }
+
+    .card-value{
+        font-size:18px;
+    }
+
+    .btn-row button{
+        width:100%;
+    }
+
+}
+
+@media print{
+
+    body{
+        background:white;
+    }
+
+    .search-box,
+    .btn-row,
+    .loading,
+    .error{
+        display:none !important;
+    }
+
+    .container{
+        width:100%;
+        max-width:none;
+        margin:0;
+    }
+
+    .header{
+        background:white;
+        color:black;
+        border:1px solid #ccc;
+    }
+
+    .card,
+    .section,
+    .info{
+        box-shadow:none;
+        border:1px solid #ddd;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h2>
+            USER BANK STATEMENT
+        </h2>
+
+        <div id="statementDate">
+            Game Day Statement
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <label>
+            User ID
+        </label>
+
+        <select
+            id="userId"
+            class="dropdown"
+        >
+
+            <option value="">
+                Select User ID
+            </option>
+
+        </select>
+
+
+        <label>
+            Statement Date
+        </label>
+
+        <select
+            id="statementDateInput"
+            class="dropdown"
+        >
+
+            <option value="">
+                Select Date
+            </option>
+
+        </select>
+
+
+        <div class="btn-row">
+
+            <button
+                class="search-btn"
+                onclick="loadStatement()"
+            >
+                SEARCH STATEMENT
+            </button>
+
+            <button
+                class="csv-btn"
+                onclick="downloadCSV()"
+            >
+                DOWNLOAD CSV
+            </button>
+
+            <button
+                class="print-btn"
+                onclick="window.print()"
+            >
+                PRINT / SAVE PDF
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="errorBox"
+        class="error"
+    ></div>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading statement...
+    </div>
+
+
+    <!-- STATEMENT -->
+
+    <div
+        id="statementArea"
+        style="display:none;"
+    >
+
+
+        <!-- USER INFORMATION -->
+
+        <div class="info">
+
+            <div class="user-title">
+                USER INFORMATION
+            </div>
+
+            <div class="user-line">
+
+                <b>User ID:</b>
+
+                <span id="showUserId">
+                    -
+                </span>
+
+            </div>
+
+            <div class="user-line">
+
+                <b>Name:</b>
+
+                <span id="showName">
+                    -
+                </span>
+
+            </div>
+
+            <div class="user-line">
+
+                <b>Mobile:</b>
+
+                <span id="showMobile">
+                    -
+                </span>
+
+            </div>
+
+            <div class="user-line">
+
+                <b>Statement Day:</b>
+
+                <span id="showDay">
+                    -
+                </span>
+
+            </div>
+
+            <div class="user-line">
+
+                <b>Time:</b>
+
+                05:00 AM to next day 04:59 AM
+
+            </div>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="summary">
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    OPENING BALANCE
+                </div>
+
+                <div
+                    class="card-value opening"
+                    id="openingBalance"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    ADD / DEPOSIT
+                </div>
+
+                <div
+                    class="card-value add"
+                    id="depositAmount"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    WITHDRAW
+                </div>
+
+                <div
+                    class="card-value withdraw"
+                    id="withdrawAmount"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    GAME / BET
+                </div>
+
+                <div
+                    class="card-value game"
+                    id="gameAmount"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    WINNING
+                </div>
+
+                <div
+                    class="card-value win"
+                    id="winningAmount"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    COMMISSION
+                </div>
+
+                <div
+                    class="card-value commission"
+                    id="commissionAmount"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    CLOSING BALANCE
+                </div>
+
+                <div
+                    class="card-value closing"
+                    id="closingBalance"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    TRANSACTIONS
+                </div>
+
+                <div
+                    class="card-value"
+                    id="transactionCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- MARKET SUMMARY -->
+
+        <div class="section">
+
+            <h3>
+                MARKET WISE GAME AMOUNT
+            </h3>
+
+            <div class="table-wrap">
+
+                <table class="market-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Market
+                            </th>
+
+                            <th>
+                                Game Amount
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="marketBody">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- TRANSACTION -->
+
+        <div class="section">
+
+            <h3>
+                TRANSACTION STATEMENT
+            </h3>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Date / Time
+                            </th>
+
+                            <th>
+                                Market
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Game Amount
+                            </th>
+
+                            <th>
+                                Win
+                            </th>
+
+                            <th>
+                                Commission
+                            </th>
+
+                            <th>
+                                Action Amount
+                            </th>
+
+                            <th>
+                                Old Balance
+                            </th>
+
+                            <th>
+                                New Balance
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody
+                        id="transactionBody"
+                    >
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- WINNING -->
+
+        <div class="section">
+
+            <h3>
+                WINNING DETAILS
+            </h3>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Market</th>
+
+                            <th>Amount</th>
+
+                            <th>Status</th>
+
+                            <th>History ID</th>
+
+                            <th>Date / Time</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody
+                        id="winningBody"
+                    >
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- DEPOSITS -->
+
+        <div class="section">
+
+            <h3>
+                DEPOSIT DETAILS
+            </h3>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Amount</th>
+
+                            <th>UTR</th>
+
+                            <th>Status</th>
+
+                            <th>Date / Time</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody
+                        id="depositBody"
+                    >
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- COMMISSION -->
+
+        <div class="section">
+
+            <h3>
+                COMMISSION DETAILS
+            </h3>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Market</th>
+
+                            <th>Total</th>
+
+                            <th>Commission</th>
+
+                            <th>Commission %</th>
+
+                            <th>Status</th>
+
+                            <th>Date / Time</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody
+                        id="commissionBody"
+                    >
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+"https://katbdbzoufiblnnsoxkk.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_--fdpQMmSlUyt2ywjUErgQ_LXGvQH-a";
+
+
+const client =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
+let statementData = {
+
+    user:null,
+
+    history:[],
+
+    wining:[],
+
+    deposits:[],
+
+    commissions:[],
+
+    marketSummary:[],
+
+    opening:0,
+
+    deposit:0,
+
+    withdraw:0,
+
+    game:0,
+
+    winning:0,
+
+    commission:0,
+
+    closing:0
+
+};
+
+
+/* =========================================================
+   PAGE LOAD
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        await loadUserDropdown();
+
+        await loadDateDropdown();
+
+    }
+);
+
+
+/* =========================================================
+   USER DROPDOWN
+========================================================= */
+
+async function loadUserDropdown(){
+
+    const select =
+    document.getElementById(
+        "userId"
+    );
+
+
+    select.innerHTML =
+    `
+    <option value="">
+        Loading Users...
+    </option>
+    `;
+
+
+    const {
+        data,
+        error
+    } =
+    await client
+    .from("login")
+    .select(
+        "id,name,mobile"
+    )
+    .order(
+        "id",
+        {
+            ascending:true
+        }
+    );
+
+
+    if(error){
+
+        console.log(
+            "User dropdown error:",
+            error.message
+        );
+
+
+        select.innerHTML =
+        `
+        <option value="">
+            Error Loading Users
+        </option>
+        `;
+
+        return;
+
+    }
+
+
+    select.innerHTML =
+    `
+    <option value="">
+        Select User ID
+    </option>
+    `;
+
+
+    (data || []).forEach(
+        user => {
+
+            const option =
+            document.createElement(
+                "option"
+            );
+
+
+            option.value =
+            user.id;
+
+
+            option.textContent =
+            user.id +
+            " - " +
+            (
+                user.name ||
+                ""
+            ) +
+            " - " +
+            (
+                user.mobile ||
+                ""
+            );
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DATE DROPDOWN
+========================================================= */
+
+async function loadDateDropdown(){
+
+    const select =
+    document.getElementById(
+        "statementDateInput"
+    );
+
+
+    select.innerHTML =
+    `
+    <option value="">
+        Loading Dates...
+    </option>
+    `;
+
+
+    const {
+        data,
+        error
+    } =
+    await client
+    .from("history")
+    .select(
+        "game_date"
+    )
+    .not(
+        "game_date",
+        "is",
+        null
+    )
+    .order(
+        "game_date",
+        {
+            ascending:false
+        }
+    );
+
+
+    if(error){
+
+        console.log(
+            "Date dropdown error:",
+            error.message
+        );
+
+
+        select.innerHTML =
+        `
+        <option value="">
+            Error Loading Dates
+        </option>
+        `;
+
+        return;
+
+    }
+
+
+    const dates =
+    [
+        ...new Set(
+            (data || [])
+            .map(
+                row =>
+                row.game_date
+            )
+            .filter(Boolean)
+        )
+    ];
+
+
+    select.innerHTML =
+    `
+    <option value="">
+        Select Date
+    </option>
+    `;
+
+
+    dates.forEach(
+        date => {
+
+            const option =
+            document.createElement(
+                "option"
+            );
+
+
+            option.value =
+            date;
+
+
+            option.textContent =
+            formatStatementDate(
+                date
+            );
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
+function formatStatementDate(
+    date
+){
+
+    if(!date){
+
+        return "";
+
+    }
+
+
+    const parts =
+    date.split("-");
+
+
+    if(
+        parts.length !== 3
+    ){
+
+        return date;
+
+    }
+
+
+    return (
+        parts[2] +
+        "-" +
+        parts[1] +
+        "-" +
+        parts[0]
+    );
+
+}
+
+
+/* =========================================================
+   GAME DAY RANGE
+========================================================= */
+
+function getGameDayRange(
+    dateString
+){
+
+    const start =
+    new Date(
+        dateString +
+        "T05:00:00+05:30"
+    );
+
+
+    const end =
+    new Date(
+        start.getTime()
+    );
+
+
+    end.setDate(
+        end.getDate()+1
+    );
+
+
+    return {
+
+        start:start,
+
+        end:end
+
+    };
+
+}
+
+
+/* =========================================================
+   MONEY
+========================================================= */
+
+function money(value){
+
+    const n =
+    Number(
+        value || 0
+    );
+
+
+    return "₹" +
+    n.toLocaleString(
+        "en-IN",
+        {
+            maximumFractionDigits:2
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DATE TIME
+========================================================= */
+
+function formatDate(
+    value
+){
+
+    if(!value){
+
+        return "-";
+
+    }
+
+
+    const d =
+    new Date(value);
+
+
+    if(
+        isNaN(
+            d.getTime()
+        )
+    ){
+
+        return value;
+
+    }
+
+
+    return d.toLocaleString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"2-digit",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit",
+            hour12:true
+        }
+    );
+
+}
+
+
+/* =========================================================
+   TYPE
+========================================================= */
+
+function getType(row){
+
+    const type =
+    String(
+        row.action_type ||
+        ""
+    ).toLowerCase();
+
+
+    const market =
+    String(
+        row.market ||
+        ""
+    ).toLowerCase();
+
+
+    if(
+        type.includes("withdraw") ||
+        type.includes("withdrawal")
+    ){
+
+        return "WITHDRAW";
+
+    }
+
+
+    if(
+        type.includes("deposit") ||
+        type.includes("add") ||
+        type.includes("recharge") ||
+        type.includes("credit")
+    ){
+
+        return "ADD / DEPOSIT";
+
+    }
+
+
+    if(
+        type.includes("win") ||
+        type.includes("winning")
+    ){
+
+        return "WINNING";
+
+    }
+
+
+    if(
+        type.includes("commission")
+    ){
+
+        return "COMMISSION";
+
+    }
+
+
+    if(
+        type.includes("game") ||
+        type.includes("bet") ||
+        type.includes("bid")
+    ){
+
+        return "GAME / BET";
+
+    }
+
+
+    if(
+        Number(
+            row.total || 0
+        ) > 0 &&
+        market
+    ){
+
+        return "GAME / BET";
+
+    }
+
+
+    return (
+        row.action_type ||
+        "TRANSACTION"
+    );
+
+}
+
+
+/* =========================================================
+   LOAD USER
+========================================================= */
+
+async function loadUser(
+    userId
+){
+
+    const {
+        data,
+        error
+    } =
+    await client
+    .from("login")
+    .select("*")
+    .eq(
+        "id",
+        userId
+    )
+    .maybeSingle();
+
+
+    if(error){
+
+        throw new Error(
+            "Login table error: " +
+            error.message
+        );
+
+    }
+
+
+    if(!data){
+
+        throw new Error(
+            "User ID " +
+            userId +
+            " login table me nahi mila."
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* =========================================================
+   LOAD HISTORY
+========================================================= */
+
+async function loadHistory(
+    userId,
+    range
+){
+
+    const selectedDate =
+    document.getElementById(
+        "statementDateInput"
+    ).value;
+
+
+    let {
+        data,
+        error
+    } =
+    await client
+    .from("history")
+    .select("*")
+    .eq(
+        "user_id",
+        String(userId)
+    )
+    .eq(
+        "game_date",
+        selectedDate
+    )
+    .order(
+        "created_at",
+        {
+            ascending:true
+        }
+    );
+
+
+    if(error){
+
+        const fallback =
+        await client
+        .from("history")
+        .select("*")
+        .eq(
+            "user_id",
+            String(userId)
+        )
+        .gte(
+            "created_at",
+            range.start.toISOString()
+        )
+        .lt(
+            "created_at",
+            range.end.toISOString()
+        )
+        .order(
+            "created_at",
+            {
+                ascending:true
+            }
+        );
+
+
+        if(
+            fallback.error
+        ){
+
+            throw new Error(
+                "History error: " +
+                fallback.error.message
+            );
+
+        }
+
+
+        data =
+        fallback.data || [];
+
+    }
+
+
+    data =
+    (data || [])
+    .filter(
+        row => {
+
+            if(
+                row.game_date
+            ){
+
+                return (
+                    row.game_date ===
+                    selectedDate
+                );
+
+            }
+
+
+            if(
+                row.created_at
+            ){
+
+                const time =
+                new Date(
+                    row.created_at
+                ).getTime();
+
+
+                return (
+                    time >=
+                    range.start.getTime()
+                    &&
+                    time <
+                    range.end.getTime()
+                );
+
+            }
+
+
+            return true;
+
+        }
+    );
+
+
+    return data;
+
+}
+
+
+/* =========================================================
+   WINING
+========================================================= */
+
+async function loadWining(
+    userId,
+    range
+){
+
+    const {
+        data,
+        error
+    } =
+    await client
+    .from("wining")
+    .select("*")
+    .eq(
+        "user_id",
+        String(userId)
+    )
+    .gte(
+        "created_at",
+        range.start.toISOString()
+    )
+    .lt(
+        "created_at",
+        range.end.toISOString()
+    )
+    .order(
+        "created_at",
+        {
+            ascending:true
+        }
+    );
+
+
+    if(error){
+
+        console.log(
+            "Wining error:",
+            error.message
+        );
+
+
+        return [];
+
+    }
+
+
+    return data || [];
+
+}
+
+
+/* =========================================================
+   DEPOSITS
+========================================================= */
+
+async function loadDeposits(
+    userId,
+    range
+){
+
+    const {
+        data,
+        error
+    } =
+    await client
+    .from("deposits")
+    .select("*")
+    .eq(
+        "user_id",
+        userId
+    )
+    .gte(
+        "created_at",
+        range.start.toISOString()
+    )
+    .lt(
+        "created_at",
+        range.end.toISOString()
+    )
+    .order(
+        "created_at",
+        {
+            ascending:true
+        }
+    );
+
+
+    if(error){
+
+        console.log(
+            "Deposits error:",
+            error.message
+        );
+
+
+        return [];
+
+    }
+
+
+    return data || [];
+
+}
+
+
+/* =========================================================
+   COMMISSIONS
+========================================================= */
+
+async function loadCommissions(
+    userId,
+    range
+){
+
+    const {
+        data,
+        error
+    } =
+    await client
+    .from("commission_records")
+    .select("*")
+    .eq(
+        "user_id",
+        String(userId)
+    )
+    .gte(
+        "created_at",
+        range.start.toISOString()
+    )
+    .lt(
+        "created_at",
+        range.end.toISOString()
+    )
+    .order(
+        "created_at",
+        {
+            ascending:true
+        }
+    );
+
+
+    if(error){
+
+        console.log(
+            "Commission error:",
+            error.message
+        );
+
+
+        return [];
+
+    }
+
+
+    return data || [];
+
+}
+
+
+/* =========================================================
+   OPENING BALANCE
+========================================================= */
+
+async function findOpeningBalance(
+    userId,
+    range
+){
+
+    const {
+        data,
+        error
+    } =
+    await client
+    .from("history")
+    .select(
+        "id,new_balance,created_at"
+    )
+    .eq(
+        "user_id",
+        String(userId)
+    )
+    .lt(
+        "created_at",
+        range.start.toISOString()
+    )
+    .not(
+        "new_balance",
+        "is",
+        null
+    )
+    .order(
+        "created_at",
+        {
+            ascending:false
+        }
+    )
+    .limit(1);
+
+
+    if(error){
+
+        console.log(
+            "Opening balance error:",
+            error.message
+        );
+
+
+        return 0;
+
+    }
+
+
+    if(
+        data &&
+        data.length
+    ){
+
+        return Number(
+            data[0].new_balance ||
+            0
+        );
+
+    }
+
+
+    return 0;
+
+}
+
+
+/* =========================================================
+   CALCULATE
+========================================================= */
+
+function calculateStatement(){
+
+    const history =
+    statementData.history;
+
+
+    let deposit = 0;
+
+    let withdraw = 0;
+
+    let game = 0;
+
+    let winning = 0;
+
+    let commission = 0;
+
+
+    const marketMap = {};
+
+
+    history.forEach(
+        row => {
+
+            const type =
+            getType(row);
+
+
+            const action =
+            Math.abs(
+                Number(
+                    row.action_amount ||
+                    0
+                )
+            );
+
+
+            const total =
+            Math.abs(
+                Number(
+                    row.total ||
+                    0
+                )
+            );
+
+
+            const win =
+            Math.abs(
+                Number(
+                    row.win_amount ||
+                    0
+                )
+            );
+
+
+            const comm =
+            Math.abs(
+                Number(
+                    row.commission ||
+                    0
+                )
+            );
+
+
+            if(
+                type ===
+                "ADD / DEPOSIT"
+            ){
+
+                deposit += action;
+
+            }
+
+
+            if(
+                type ===
+                "WITHDRAW"
+            ){
+
+                withdraw += action;
+
+            }
+
+
+            if(
+                type ===
+                "GAME / BET"
+            ){
+
+                game += total;
+
+
+                const market =
+                row.market ||
+                "Unknown";
+
+
+                if(
+                    !marketMap[market]
+                ){
+
+                    marketMap[market] =
+                    0;
+
+                }
+
+
+                marketMap[market] +=
+                total;
+
+            }
+
+
+            if(
+                type ===
+                "WINNING"
+            ){
+
+                winning +=
+                action ||
+                win;
+
+            }
+
+
+            if(
+                win > 0 &&
+                type !== "WINNING"
+            ){
+
+                winning += win;
+
+            }
+
+
+            if(
+                type ===
+                "COMMISSION"
+            ){
+
+                commission +=
+                action ||
+                comm;
+
+            }
+
+
+            if(
+                comm > 0 &&
+                type !== "COMMISSION"
+            ){
+
+                commission += comm;
+
+            }
+
+        }
+    );
+
+
+    /*
+      Wining table fallback
+    */
+
+    if(
+        winning === 0 &&
+        statementData.wining.length
+    ){
+
+        statementData.wining.forEach(
+            row => {
+
+                const status =
+                String(
+                    row.status ||
+                    ""
+                ).toLowerCase();
+
+
+                if(
+                    status ===
+                    "accepted"
+                ){
+
+                    winning +=
+                    Number(
+                        row.amount ||
+                        0
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /*
+      Deposit table fallback
+    */
+
+    if(
+        deposit === 0 &&
+        statementData.deposits.length
+    ){
+
+        statementData.deposits.forEach(
+            row => {
+
+                const status =
+                String(
+                    row.status ||
+                    ""
+                ).toLowerCase();
+
+
+                if(
+                    status === "accepted" ||
+                    status === "approved" ||
+                    status === "success" ||
+                    status === "completed"
+                ){
+
+                    deposit +=
+                    Number(
+                        row.amount ||
+                        0
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    statementData.deposit =
+    deposit;
+
+
+    statementData.withdraw =
+    withdraw;
+
+
+    statementData.game =
+    game;
+
+
+    statementData.winning =
+    winning;
+
+
+    statementData.commission =
+    commission;
+
+
+    statementData.marketSummary =
+    Object.keys(
+        marketMap
+    )
+    .map(
+        market => ({
+
+            market:market,
+
+            amount:
+            marketMap[market]
+
+        })
+    )
+    .sort(
+        (a,b) =>
+        b.amount -
+        a.amount
+    );
+
+
+    if(
+        history.length
+    ){
+
+        const last =
+        history[
+            history.length - 1
+        ];
+
+
+        if(
+            last.new_balance !==
+            null &&
+            last.new_balance !==
+            undefined
+        ){
+
+            statementData.closing =
+            Number(
+                last.new_balance
+            );
+
+        }else{
+
+            statementData.closing =
+            statementData.opening +
+            deposit +
+            winning +
+            commission -
+            withdraw;
+
+        }
+
+    }else{
+
+        statementData.closing =
+        statementData.opening +
+        deposit +
+        winning +
+        commission -
+        withdraw;
+
+    }
+
+}
+
+
+/* =========================================================
+   DISPLAY USER
+========================================================= */
+
+function displayUser(){
+
+    const u =
+    statementData.user;
+
+
+    document.getElementById(
+        "showUserId"
+    ).textContent =
+    u.id ?? "-";
+
+
+    document.getElementById(
+        "showName"
+    ).textContent =
+    u.name ?? "-";
+
+
+    document.getElementById(
+        "showMobile"
+    ).textContent =
+    u.mobile ?? "-";
+
+
+    const selectedDate =
+    document.getElementById(
+        "statementDateInput"
+    ).value;
+
+
+    document.getElementById(
+        "showDay"
+    ).textContent =
+    formatStatementDate(
+        selectedDate
+    );
+
+
+    document.getElementById(
+        "statementDate"
+    ).textContent =
+    "Statement: " +
+    formatStatementDate(
+        selectedDate
+    );
+
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+function displaySummary(){
+
+    document.getElementById(
+        "openingBalance"
+    ).textContent =
+    money(
+        statementData.opening
+    );
+
+
+    document.getElementById(
+        "depositAmount"
+    ).textContent =
+    money(
+        statementData.deposit
+    );
+
+
+    document.getElementById(
+        "withdrawAmount"
+    ).textContent =
+    money(
+        statementData.withdraw
+    );
+
+
+    document.getElementById(
+        "gameAmount"
+    ).textContent =
+    money(
+        statementData.game
+    );
+
+
+    document.getElementById(
+        "winningAmount"
+    ).textContent =
+    money(
+        statementData.winning
+    );
+
+
+    document.getElementById(
+        "commissionAmount"
+    ).textContent =
+    money(
+        statementData.commission
+    );
+
+
+    document.getElementById(
+        "closingBalance"
+    ).textContent =
+    money(
+        statementData.closing
+    );
+
+
+    document.getElementById(
+        "transactionCount"
+    ).textContent =
+    statementData.history.length;
+
+}
+
+
+/* =========================================================
+   MARKET
+========================================================= */
+
+function displayMarket(){
+
+    const body =
+    document.getElementById(
+        "marketBody"
+    );
+
+
+    body.innerHTML = "";
+
+
+    if(
+        !statementData.marketSummary.length
+    ){
+
+        body.innerHTML =
+        `
+        <tr>
+            <td colspan="2">
+                No game data
+            </td>
+        </tr>
+        `;
+
+        return;
+
+    }
+
+
+    let total = 0;
+
+
+    statementData.marketSummary.forEach(
+        row => {
+
+            total +=
+            Number(
+                row.amount ||
+                0
+            );
+
+
+            body.innerHTML +=
+            `
+            <tr>
+
+                <td>
+                    ${escapeHTML(
+                        row.market
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.amount
+                    )}
+                </td>
+
+            </tr>
+            `;
+
+        }
+    );
+
+
+    body.innerHTML +=
+    `
+    <tr class="total-row">
+
+        <td>
+            TOTAL
+        </td>
+
+        <td>
+            ${money(total)}
+        </td>
+
+    </tr>
+    `;
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function displayHistory(){
+
+    const body =
+    document.getElementById(
+        "transactionBody"
+    );
+
+
+    body.innerHTML = "";
+
+
+    if(
+        !statementData.history.length
+    ){
+
+        body.innerHTML =
+        `
+        <tr>
+
+            <td colspan="10">
+                No transactions found
+            </td>
+
+        </tr>
+        `;
+
+        return;
+
+    }
+
+
+    statementData.history.forEach(
+        row => {
+
+            body.innerHTML +=
+            `
+            <tr>
+
+                <td>
+                    ${formatDate(
+                        row.created_at
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        row.market ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        getType(row)
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.total
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.win_amount
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.commission
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.action_amount
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.old_balance
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.new_balance
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        row.status ||
+                        "-"
+                    )}
+                </td>
+
+            </tr>
+            `;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   WINING
+========================================================= */
+
+function displayWining(){
+
+    const body =
+    document.getElementById(
+        "winningBody"
+    );
+
+
+    body.innerHTML = "";
+
+
+    if(
+        !statementData.wining.length
+    ){
+
+        body.innerHTML =
+        `
+        <tr>
+
+            <td colspan="6">
+                No winning records
+            </td>
+
+        </tr>
+        `;
+
+        return;
+
+    }
+
+
+    statementData.wining.forEach(
+        row => {
+
+            body.innerHTML +=
+            `
+            <tr>
+
+                <td>
+                    ${row.id ?? "-"}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        row.market ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.amount
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        row.status ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${row.history_id ??
+                    "-"}
+                </td>
+
+                <td>
+                    ${formatDate(
+                        row.created_at
+                    )}
+                </td>
+
+            </tr>
+            `;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DEPOSITS
+========================================================= */
+
+function displayDeposits(){
+
+    const body =
+    document.getElementById(
+        "depositBody"
+    );
+
+
+    body.innerHTML = "";
+
+
+    if(
+        !statementData.deposits.length
+    ){
+
+        body.innerHTML =
+        `
+        <tr>
+
+            <td colspan="5">
+                No deposit records
+            </td>
+
+        </tr>
+        `;
+
+        return;
+
+    }
+
+
+    statementData.deposits.forEach(
+        row => {
+
+            body.innerHTML +=
+            `
+            <tr>
+
+                <td>
+                    ${row.id ?? "-"}
+                </td>
+
+                <td>
+                    ${money(
+                        row.amount
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        row.utr ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        row.status ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${formatDate(
+                        row.created_at
+                    )}
+                </td>
+
+            </tr>
+            `;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   COMMISSION
+========================================================= */
+
+function displayCommissions(){
+
+    const body =
+    document.getElementById(
+        "commissionBody"
+    );
+
+
+    body.innerHTML = "";
+
+
+    if(
+        !statementData.commissions.length
+    ){
+
+        body.innerHTML =
+        `
+        <tr>
+
+            <td colspan="7">
+                No commission records
+            </td>
+
+        </tr>
+        `;
+
+        return;
+
+    }
+
+
+    statementData.commissions.forEach(
+        row => {
+
+            body.innerHTML +=
+            `
+            <tr>
+
+                <td>
+                    ${row.id ?? "-"}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        row.market ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.total
+                    )}
+                </td>
+
+                <td>
+                    ${money(
+                        row.commission_amount ||
+                        row.commission
+                    )}
+                </td>
+
+                <td>
+                    ${
+                        row.commission_percent ??
+                        "-"
+                    }%
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        row.status ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${formatDate(
+                        row.created_at
+                    )}
+                </td>
+
+            </tr>
+            `;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(
+    value
+){
+
+    if(
+        value === null ||
+        value === undefined
+    ){
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   LOAD STATEMENT
+========================================================= */
+
+async function loadStatement(){
+
+    const userId =
+    document.getElementById(
+        "userId"
+    ).value;
+
+
+    const date =
+    document.getElementById(
+        "statementDateInput"
+    ).value;
+
+
+    const errorBox =
+    document.getElementById(
+        "errorBox"
+    );
+
+
+    const loading =
+    document.getElementById(
+        "loading"
+    );
+
+
+    const area =
+    document.getElementById(
+        "statementArea"
+    );
+
+
+    errorBox.style.display =
+    "none";
+
+
+    area.style.display =
+    "none";
+
+
+    if(!userId){
+
+        showError(
+            "User ID select karo."
+        );
+
+        return;
+
+    }
+
+
+    if(!date){
+
+        showError(
+            "Statement date select karo."
+        );
+
+        return;
+
+    }
+
+
+    loading.style.display =
+    "block";
+
+
+    try{
+
+        const range =
+        getGameDayRange(
+            date
+        );
+
+
+        statementData = {
+
+            user:null,
+
+            history:[],
+
+            wining:[],
+
+            deposits:[],
+
+            commissions:[],
+
+            marketSummary:[],
+
+            opening:0,
+
+            deposit:0,
+
+            withdraw:0,
+
+            game:0,
+
+            winning:0,
+
+            commission:0,
+
+            closing:0
+
+        };
+
+
+        const user =
+        await loadUser(
+            userId
+        );
+
+
+        statementData.user =
+        user;
+
+
+        const results =
+        await Promise.all([
+
+            loadHistory(
+                userId,
+                range
+            ),
+
+            loadWining(
+                userId,
+                range
+            ),
+
+            loadDeposits(
+                userId,
+                range
+            ),
+
+            loadCommissions(
+                userId,
+                range
+            ),
+
+            findOpeningBalance(
+                userId,
+                range
+            )
+
+        ]);
+
+
+        statementData.history =
+        results[0];
+
+
+        statementData.wining =
+        results[1];
+
+
+        statementData.deposits =
+        results[2];
+
+
+        statementData.commissions =
+        results[3];
+
+
+        statementData.opening =
+        Number(
+            results[4] ||
+            0
+        );
+
+
+        calculateStatement();
+
+
+        displayUser();
+
+        displaySummary();
+
+        displayMarket();
+
+        displayHistory();
+
+        displayWining();
+
+        displayDeposits();
+
+        displayCommissions();
+
+
+        area.style.display =
+        "block";
+
+
+    }catch(error){
+
+        console.log(
+            error
+        );
+
+
+        showError(
+            error.message ||
+            "Statement load error."
+        );
+
+    }finally{
+
+        loading.style.display =
+        "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+function showError(
+    message
+){
+
+    const box =
+    document.getElementById(
+        "errorBox"
+    );
+
+
+    box.textContent =
+    message;
+
+
+    box.style.display =
+    "block";
+
+}
+
+
+/* =========================================================
+   CSV
+========================================================= */
+
+function downloadCSV(){
+
+    if(
+        !statementData.user
+    ){
+
+        alert(
+            "Pehle statement search karo."
+        );
+
+        return;
+
+    }
+
+
+    const rows = [];
+
+
+    rows.push([
+        "USER STATEMENT"
+    ]);
+
+
+    rows.push([
+        "User ID",
+        statementData.user.id
+    ]);
+
+
+    rows.push([
+        "Name",
+        statementData.user.name ||
+        ""
+    ]);
+
+
+    rows.push([
+        "Mobile",
+        statementData.user.mobile ||
+        ""
+    ]);
+
+
+    rows.push([
+        "Statement Date",
+        document.getElementById(
+            "statementDateInput"
+        ).value
+    ]);
+
+
+    rows.push([]);
+
+
+    rows.push([
+        "SUMMARY"
+    ]);
+
+
+    rows.push([
+        "Opening Balance",
+        statementData.opening
+    ]);
+
+
+    rows.push([
+        "Add / Deposit",
+        statementData.deposit
+    ]);
+
+
+    rows.push([
+        "Withdraw",
+        statementData.withdraw
+    ]);
+
+
+    rows.push([
+        "Game / Bet",
+        statementData.game
+    ]);
+
+
+    rows.push([
+        "Winning",
+        statementData.winning
+    ]);
+
+
+    rows.push([
+        "Commission",
+        statementData.commission
+    ]);
+
+
+    rows.push([
+        "Closing Balance",
+        statementData.closing
+    ]);
+
+
+    rows.push([]);
+
+
+    rows.push([
+        "TRANSACTIONS"
+    ]);
+
+
+    rows.push([
+        "Date/Time",
+        "Market",
+        "Type",
+        "Game Amount",
+        "Winning",
+        "Commission",
+        "Action Amount",
+        "Old Balance",
+        "New Balance",
+        "Status"
+    ]);
+
+
+    statementData.history.forEach(
+        row => {
+
+            rows.push([
+
+                formatDate(
+                    row.created_at
+                ),
+
+                row.market ||
+                "",
+
+                getType(row),
+
+                Number(
+                    row.total ||
+                    0
+                ),
+
+                Number(
+                    row.win_amount ||
+                    0
+                ),
+
+                Number(
+                    row.commission ||
+                    0
+                ),
+
+                Number(
+                    row.action_amount ||
+                    0
+                ),
+
+                Number(
+                    row.old_balance ||
+                    0
+                ),
+
+                Number(
+                    row.new_balance ||
+                    0
+                ),
+
+                row.status ||
+                ""
+
+            ]);
+
+        }
+    );
+
+
+    const csv =
+    rows
+    .map(
+        row =>
+        row
+        .map(
+            value =>
+            csvEscape(value)
+        )
+        .join(",")
+    )
+    .join("\n");
+
+
+    const blob =
+    new Blob(
+        [csv],
+        {
+            type:
+            "text/csv;charset=utf-8;"
+        }
+    );
+
+
+    const url =
+    URL.createObjectURL(
+        blob
+    );
+
+
+    const a =
+    document.createElement(
+        "a"
+    );
+
+
+    const date =
+    document.getElementById(
+        "statementDateInput"
+    ).value;
+
+
+    const userId =
+    statementData.user.id;
+
+
+    a.href =
+    url;
+
+
+    a.download =
+    "statement_" +
+    userId +
+    "_" +
+    date +
+    ".csv";
+
+
+    document.body.appendChild(
+        a
+    );
+
+
+    a.click();
+
+
+    a.remove();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+/* =========================================================
+   CSV ESCAPE
+========================================================= */
+
+function csvEscape(
+    value
+){
+
+    if(
+        value === null ||
+        value === undefined
+    ){
+
+        return "";
+
+    }
+
+
+    const text =
+    String(value)
+    .replace(
+        /"/g,
+        '""'
+    );
+
+
+    if(
+        text.includes(",") ||
+        text.includes('"') ||
+        text.includes("\n")
+    ){
+
+        return '"' +
+        text +
+        '"';
+
+    }
+
+
+    return text;
+
+}
+
+</script>
+
+</body>
+
+</html>
