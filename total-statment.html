@@ -1132,78 +1132,103 @@ async function loadStatement(){
     });
 
 
-    /* =====================================
-       4. ADMIN WINING
-    ===================================== */
+ /* =====================================
+   4. ADMIN WINING
+   ===================================== */
 
-    const winningRows =
-        await getAllRows(
-            "admin wining",
-            `
-            id,
-            user_id,
-            amount,
-            market,
-            created_at
-            `,
-            query =>
-                query
-                .eq(
-                    "user_id",
-                    String(userId)
-                )
-                .gte(
-                    "created_at",
-                    startLocal
-                )
-                .lt(
-                    "created_at",
-                    endLocal
-                )
-                .order(
-                    "created_at",
-                    {ascending:true}
-                )
+const winningRows =
+    await getAllRows(
+        "admin wining",
+        `
+        id,
+        user_id,
+        amount,
+        market,
+        created_at
+        `,
+        query =>
+            query
+            .eq(
+                "user_id",
+                String(userId)
+            )
+            .gte(
+                "created_at",
+                startLocal
+            )
+            .lt(
+                "created_at",
+                endLocal
+            )
+            .order(
+                "created_at",
+                {ascending:true}
+            )
+    );
+
+
+winningRows.forEach(row => {
+
+    const amount =
+        Number(
+            row.amount || 0
         );
 
+    if(amount <= 0){
 
-    winningRows.forEach(row => {
+        return;
+    }
 
-        const amount =
-            Number(
-                row.amount || 0
-            );
+    /*
+       Avoid duplicate with history win
+    */
 
-        if(amount <= 0){
+    const duplicate =
+        transactions.some(t =>
 
-            return;
-        }
+            t.source === "history-winning" &&
 
-        /*
-           Avoid duplicate with history win
-        */
+            Number(t.credit) === amount &&
 
-        const duplicate =
-            transactions.some(t =>
+            Math.abs(
+                t.time.getTime() -
+                new Date(
+                    row.created_at
+                ).getTime()
+            ) < 5 * 60 * 1000
 
-                t.source === "history-winning" &&
+        );
 
-                Number(t.credit) === amount &&
+    if(duplicate){
 
-                Math.abs(
-                    t.time.getTime() -
-                    new Date(
-                        row.created_at
-                    ).getTime()
-                ) < 5 * 60 * 1000
+        return;
+    }
 
-            );
+    transactions.push({
 
-        if(duplicate){
+        time:
+            new Date(
+                row.created_at
+            ),
 
-            return;
-        }
+        particulars:
+            `${row.market || "Game"} - Winning`,
 
+        debit:
+            0,
+
+        credit:
+            amount,
+
+        source:
+            "admin-winning",
+
+        sourceId:
+            row.id
+
+    });
+
+});
         transactions.push({
 
             time:
