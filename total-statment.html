@@ -10,499 +10,306 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#f3f4f6;
-    color:#111827;
-}
-
-.container{
-    width:96%;
-    max-width:1200px;
-    margin:20px auto;
+    font-family:Arial,sans-serif;
+    background:#f2f4f7;
+    color:#222;
 }
 
 .header{
-    background:white;
-    border:1px solid #d1d5db;
-    padding:18px;
-    border-radius:8px;
-    margin-bottom:15px;
-}
-
-h2{
+    background:#111827;
+    color:white;
+    padding:15px;
     text-align:center;
-    margin:0 0 18px;
-    font-size:22px;
+    font-size:21px;
+    font-weight:bold;
 }
 
 .filters{
-    display:grid;
-    grid-template-columns:1fr 1fr auto;
+    background:white;
+    padding:12px;
+    display:flex;
     gap:10px;
+    flex-wrap:wrap;
+    box-shadow:0 2px 6px rgba(0,0,0,0.12);
 }
 
-label{
+.filter-box{
+    flex:1;
+    min-width:180px;
+}
+
+.filter-box label{
     display:block;
     font-size:13px;
     font-weight:bold;
     margin-bottom:5px;
 }
 
-select,
-button{
+select{
     width:100%;
-    height:42px;
-    border:1px solid #bbb;
-    border-radius:5px;
-    padding:0 10px;
-    font-size:14px;
-    background:white;
-}
-
-button{
-    background:#111827;
-    color:white;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-button:hover{
-    opacity:.9;
-}
-
-.actions{
-    display:flex;
-    gap:10px;
-    margin-top:12px;
-}
-
-.actions button{
-    width:auto;
-    padding:0 18px;
-}
-
-.statement{
-    background:white;
-    border:1px solid #d1d5db;
-    border-radius:8px;
-    padding:18px;
-    overflow:hidden;
-}
-
-.user-info{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:10px;
-    margin-bottom:18px;
-}
-
-.info-box{
-    border:1px solid #ddd;
     padding:10px;
-    border-radius:5px;
+    border:1px solid #bbb;
+    border-radius:6px;
+    background:white;
+    font-size:14px;
 }
 
-.info-title{
-    font-size:12px;
-    color:#666;
+.info{
+    background:white;
+    margin:12px;
+    padding:12px;
+    border-radius:7px;
+    box-shadow:0 1px 5px rgba(0,0,0,0.10);
 }
 
-.info-value{
-    font-weight:bold;
-    margin-top:4px;
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
 }
 
-.statement-title{
-    text-align:center;
-    margin:8px 0 15px;
+.info-item{
+    font-size:14px;
 }
 
-.table-wrap{
-    width:100%;
-    overflow-x:auto;
+.info-item b{
+    color:#111827;
+}
+
+.table-container{
+    margin:12px;
+    background:white;
+    border-radius:7px;
+    overflow:auto;
+    box-shadow:0 1px 5px rgba(0,0,0,0.10);
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:850px;
+    min-width:700px;
+}
+
+thead{
+    background:#111827;
+    color:white;
 }
 
 th,
 td{
-    border:1px solid #d1d5db;
-    padding:9px 8px;
+    padding:10px 8px;
+    border-bottom:1px solid #ddd;
+    text-align:left;
     font-size:13px;
+    white-space:nowrap;
 }
 
 th{
-    background:#e5e7eb;
-    text-align:center;
+    font-size:13px;
 }
 
-td{
-    background:white;
-}
-
-.right{
+td.debit{
+    color:#dc2626;
+    font-weight:bold;
     text-align:right;
 }
 
-.center{
-    text-align:center;
-}
-
-.debit{
-    color:#b91c1c;
+td.credit{
+    color:#15803d;
     font-weight:bold;
+    text-align:right;
 }
 
-.credit{
-    color:#047857;
-    font-weight:bold;
+td.amount{
+    text-align:right;
 }
 
-.balance{
+.total-row{
+    background:#f3f4f6;
     font-weight:bold;
 }
 
 .total-row td{
-    background:#f3f4f6;
-    font-weight:bold;
     border-top:2px solid #111827;
+    font-size:14px;
 }
 
-.summary{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
-    margin-top:15px;
+.total-debit{
+    color:#dc2626;
+    text-align:right;
 }
 
-.summary-box{
-    border:1px solid #d1d5db;
-    padding:12px;
-    border-radius:6px;
-    background:#fafafa;
-}
-
-.summary-title{
-    font-size:13px;
-    color:#555;
-}
-
-.summary-value{
-    font-size:18px;
-    font-weight:bold;
-    margin-top:5px;
-}
-
-.loading{
-    text-align:center;
-    padding:20px;
-    color:#666;
-}
-
-.error{
-    color:#b91c1c;
-    background:#fee2e2;
-    border:1px solid #fecaca;
-    padding:12px;
-    border-radius:5px;
-    margin-top:10px;
+.total-credit{
+    color:#15803d;
+    text-align:right;
 }
 
 .empty{
     text-align:center;
-    padding:25px;
-    color:#666;
+    padding:30px;
+    color:#777;
 }
 
-@media(max-width:700px){
+.loading{
+    text-align:center;
+    padding:25px;
+    color:#555;
+}
 
-    .container{
-        width:98%;
-        margin:8px auto;
+.error{
+    margin:12px;
+    padding:12px;
+    background:#fee2e2;
+    color:#991b1b;
+    border-radius:6px;
+    display:none;
+}
+
+.current-wallet{
+    margin:12px;
+    padding:12px;
+    background:#ecfdf5;
+    border:1px solid #bbf7d0;
+    border-radius:7px;
+    font-weight:bold;
+    color:#166534;
+    text-align:right;
+}
+
+@media(max-width:600px){
+
+    .header{
+        font-size:18px;
     }
 
     .filters{
-        grid-template-columns:1fr;
-    }
-
-    .user-info{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .summary{
-        grid-template-columns:1fr;
-    }
-
-    .actions{
         flex-direction:column;
     }
 
-    .actions button{
+    .filter-box{
         width:100%;
-    }
-
-    .statement{
-        padding:10px;
-    }
-}
-
-@media print{
-
-    body{
-        background:white;
-    }
-
-    .no-print{
-        display:none !important;
-    }
-
-    .container{
-        width:100%;
-        max-width:none;
-        margin:0;
-    }
-
-    .statement{
-        border:none;
-    }
-
-    table{
-        min-width:0;
     }
 
     th,
     td{
-        font-size:11px;
-        padding:6px;
+        padding:8px 6px;
+        font-size:12px;
     }
+
 }
+
 </style>
 
 </head>
 
 <body>
 
-<div class="container">
+<div class="header">
+    USER BANK STATEMENT
+</div>
 
-    <div class="header no-print">
+<div class="filters">
 
-        <h2>USER BANK STATEMENT</h2>
+    <div class="filter-box">
+        <label>User ID</label>
 
-        <div class="filters">
-
-            <div>
-                <label>User ID</label>
-                <select id="userSelect">
-                    <option value="">Select User ID</option>
-                </select>
-            </div>
-
-            <div>
-                <label>Statement Date</label>
-                <select id="dateSelect">
-                    <option value="">Select Date</option>
-                </select>
-            </div>
-
-            <div style="display:flex;align-items:end;">
-                <button onclick="loadStatement()">SEARCH</button>
-            </div>
-
-        </div>
-
-        <div class="actions">
-            <button onclick="downloadCSV()">DOWNLOAD CSV</button>
-            <button onclick="window.print()">PRINT / SAVE PDF</button>
-        </div>
-
-        <div id="errorBox"></div>
-
+        <select id="userSelect">
+            <option value="">Select User ID</option>
+        </select>
     </div>
 
+    <div class="filter-box">
+        <label>Statement Date</label>
 
-    <div class="statement" id="statementArea">
+        <select id="dateSelect">
+            <option value="">Select Date</option>
+        </select>
+    </div>
 
-        <div class="statement-title">
-            <h2>USER BANK STATEMENT</h2>
-            <div id="statementDateText">Select User and Date</div>
+</div>
+
+<div id="errorBox" class="error"></div>
+
+<div id="userInfo" class="info" style="display:none;">
+
+    <div class="info-row">
+
+        <div class="info-item">
+            User ID:
+            <b id="showUserId">-</b>
         </div>
 
-
-        <div class="user-info">
-
-            <div class="info-box">
-                <div class="info-title">User ID</div>
-                <div class="info-value" id="infoUserId">-</div>
-            </div>
-
-            <div class="info-box">
-                <div class="info-title">Name</div>
-                <div class="info-value" id="infoName">-</div>
-            </div>
-
-            <div class="info-box">
-                <div class="info-title">Mobile</div>
-                <div class="info-value" id="infoMobile">-</div>
-            </div>
-
-            <div class="info-box">
-                <div class="info-title">Statement Period</div>
-                <div class="info-value">05:00 AM - 04:59 AM</div>
-            </div>
-
+        <div class="info-item">
+            Name:
+            <b id="showName">-</b>
         </div>
 
-
-        <div class="table-wrap">
-
-            <table id="statementTable">
-
-                <thead>
-                    <tr>
-                        <th>Date / Time</th>
-                        <th>Particulars</th>
-                        <th>Debit</th>
-                        <th>Credit</th>
-                        <th>Balance</th>
-                    </tr>
-                </thead>
-
-                <tbody id="statementBody">
-
-                    <tr>
-                        <td colspan="5" class="empty">
-                            User ID और Date select करें
-                        </td>
-                    </tr>
-
-                </tbody>
-
-                <tfoot>
-
-                    <tr class="total-row">
-
-                        <td colspan="2" class="right">
-                            TOTAL
-                        </td>
-
-                        <td class="right debit" id="totalDebit">
-                            ₹0
-                        </td>
-
-                        <td class="right credit" id="totalCredit">
-                            ₹0
-                        </td>
-
-                        <td class="right balance" id="closingBalance">
-                            ₹0
-                        </td>
-
-                    </tr>
-
-                </tfoot>
-
-            </table>
-
+        <div class="info-item">
+            Mobile:
+            <b id="showMobile">-</b>
         </div>
 
-
-        <div class="summary">
-
-            <div class="summary-box">
-
-                <div class="summary-title">
-                    Opening Balance
-                </div>
-
-                <div class="summary-value" id="openingBalance">
-                    ₹0
-                </div>
-
-            </div>
-
-
-            <div class="summary-box">
-
-                <div class="summary-title">
-                    Total Debit
-                </div>
-
-                <div class="summary-value debit" id="summaryDebit">
-                    ₹0
-                </div>
-
-            </div>
-
-
-            <div class="summary-box">
-
-                <div class="summary-title">
-                    Total Credit
-                </div>
-
-                <div class="summary-value credit" id="summaryCredit">
-                    ₹0
-                </div>
-
-            </div>
-
-
-            <div class="summary-box">
-
-                <div class="summary-title">
-                    Closing Balance
-                </div>
-
-                <div class="summary-value" id="summaryClosing">
-                    ₹0
-                </div>
-
-            </div>
-
-
-            <div class="summary-box">
-
-                <div class="summary-title">
-                    Current Wallet
-                </div>
-
-                <div class="summary-value" id="currentWallet">
-                    ₹0
-                </div>
-
-            </div>
-
-
-            <div class="summary-box">
-
-                <div class="summary-title">
-                    Total Transactions
-                </div>
-
-                <div class="summary-value" id="transactionCount">
-                    0
-                </div>
-
-            </div>
-
+        <div class="info-item">
+            Date:
+            <b id="showDate">-</b>
         </div>
 
     </div>
 
 </div>
 
+<div id="loading" class="loading" style="display:none;">
+    Loading statement...
+</div>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+    <th>Date / Time</th>
+    <th>Particulars</th>
+    <th style="text-align:right;">Debit</th>
+    <th style="text-align:right;">Credit</th>
+</tr>
+
+</thead>
+
+<tbody id="statementBody">
+
+<tr>
+    <td colspan="4" class="empty">
+        Select User ID and Date
+    </td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div id="walletBox" class="current-wallet" style="display:none;">
+    Current Wallet Balance: ₹<span id="currentWallet">0.00</span>
+</div>
+
 
 <script>
+
+/* =========================================
+   SUPABASE
+========================================= */
 
 const SUPABASE_URL =
 "https://katbdbzoufiblnnsoxkk.supabase.co";
@@ -510,47 +317,146 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_--fdpQMmSlUyt2ywjUErgQ_LXGvQH-a";
 
-const client =
-window.supabase.createClient(
+const supabaseClient =
+supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
 
-let allUsers = [];
-let allDates = [];
-let currentStatementRows = [];
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const userSelect =
+document.getElementById("userSelect");
+
+const dateSelect =
+document.getElementById("dateSelect");
+
+const statementBody =
+document.getElementById("statementBody");
+
+const loading =
+document.getElementById("loading");
+
+const errorBox =
+document.getElementById("errorBox");
+
+const userInfo =
+document.getElementById("userInfo");
+
+const walletBox =
+document.getElementById("walletBox");
+
+const currentWallet =
+document.getElementById("currentWallet");
 
 
+/* =========================================
+   ALL ROWS FETCH
+   Supabase ki 1000-row limit se bachne ke liye
+========================================= */
+
+async function fetchAllRows(table, columns, filters = [], orderColumn = "id"){
+
+    let allRows = [];
+    let from = 0;
+    const batchSize = 1000;
+
+    while(true){
+
+        let query =
+            supabaseClient
+            .from(table)
+            .select(columns)
+            .order(orderColumn, {ascending:true})
+            .range(from, from + batchSize - 1);
+
+        for(const filter of filters){
+
+            if(filter.type === "eq"){
+                query = query.eq(filter.column, filter.value);
+            }
+
+            if(filter.type === "gte"){
+                query = query.gte(filter.column, filter.value);
+            }
+
+            if(filter.type === "lt"){
+                query = query.lt(filter.column, filter.value);
+            }
+
+            if(filter.type === "not"){
+                query = query.not(
+                    filter.column,
+                    filter.operator,
+                    filter.value
+                );
+            }
+
+        }
+
+        const {data,error} = await query;
+
+        if(error){
+            throw error;
+        }
+
+        if(!data || data.length === 0){
+            break;
+        }
+
+        allRows.push(...data);
+
+        if(data.length < batchSize){
+            break;
+        }
+
+        from += batchSize;
+    }
+
+    return allRows;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+function showError(message){
+
+    errorBox.innerText = message;
+    errorBox.style.display = "block";
+
+}
+
+function hideError(){
+
+    errorBox.innerText = "";
+    errorBox.style.display = "none";
+
+}
+
+
+/* =========================================
+   FORMAT
+========================================= */
 
 function money(value){
 
-    let n = Number(value || 0);
+    const number =
+        Number(value || 0);
 
-    return "₹" + n.toLocaleString("en-IN", {
-        minimumFractionDigits:
-            Number.isInteger(n) ? 0 : 2,
-        maximumFractionDigits:2
-    });
+    return number.toLocaleString(
+        "en-IN",
+        {
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+        }
+    );
 
 }
-
-
-
-function escapeHTML(value){
-
-    if(value === null || value === undefined){
-        return "";
-    }
-
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-}
-
 
 
 function formatDateTime(value){
@@ -565,1445 +471,1081 @@ function formatDateTime(value){
         return value;
     }
 
-    return d.toLocaleString("en-IN",{
-        day:"2-digit",
-        month:"2-digit",
-        year:"numeric",
-        hour:"2-digit",
-        minute:"2-digit",
-        second:"2-digit",
-        hour12:true
-    });
-
-}
-
-
-
-function gameDateStart(date){
-
-    return date + "T05:00:00+05:30";
-
-}
-
-
-
-function nextGameDate(date){
-
-    const d = new Date(date + "T00:00:00+05:30");
-
-    d.setDate(d.getDate() + 1);
-
-    return d.toISOString()
-        .slice(0,10);
-
-}
-
-
-
-function showError(message){
-
-    document.getElementById("errorBox").innerHTML =
-        `<div class="error">${escapeHTML(message)}</div>`;
-
-}
-
-
-
-function clearError(){
-
-    document.getElementById("errorBox").innerHTML = "";
-
-}
-
-
-
-async function loadUsers(){
-
-    const {data,error} = await client
-        .from("login")
-        .select("id,name,mobile")
-        .order("id",{ascending:true});
-
-    if(error){
-
-        showError(
-            "User list load नहीं हुई: " +
-            error.message
-        );
-
-        return;
-    }
-
-    allUsers = data || [];
-
-    const select =
-        document.getElementById("userSelect");
-
-    select.innerHTML =
-        `<option value="">Select User ID</option>`;
-
-    allUsers.forEach(user => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = user.id;
-
-        option.textContent =
-            `${user.id} - ${user.name || ""} - ${user.mobile || ""}`;
-
-        select.appendChild(option);
-
-    });
-
-}
-
-
-
-async function loadDates(){
-
-    const {data,error} = await client
-        .from("history")
-        .select("game_date")
-        .not("game_date","is",null);
-
-    if(error){
-
-        showError(
-            "Statement dates load नहीं हुईं: " +
-            error.message
-        );
-
-        return;
-    }
-
-    const dates = [...new Set(
-        (data || [])
-        .map(x => x.game_date)
-        .filter(Boolean)
-    )];
-
-    dates.sort((a,b) =>
-        new Date(b) - new Date(a)
-    );
-
-    allDates = dates;
-
-    const select =
-        document.getElementById("dateSelect");
-
-    select.innerHTML =
-        `<option value="">Select Date</option>`;
-
-    dates.forEach(date => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = date;
-
-        const parts =
-            date.split("-");
-
-        option.textContent =
-            `${parts[2]}-${parts[1]}-${parts[0]}`;
-
-        select.appendChild(option);
-
-    });
-
-}
-
-
-
-function getUser(userId){
-
-    return allUsers.find(
-        x => String(x.id) === String(userId)
+    return d.toLocaleString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"2-digit",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit",
+            hour12:true
+        }
     );
 
 }
 
 
+/* =========================================
+   INDIA TIME
+========================================= */
 
-function classifyHistory(row){
+function getIndiaDateTime(date){
 
-    const action =
-        String(row.action_type || "")
-        .toLowerCase();
-
-    const market =
-        String(row.market || "")
-        .toLowerCase();
-
-    const data =
-        String(row.data || "")
-        .toLowerCase();
-
-
-    /*
-       पहले स्पष्ट wallet action पहचानें
-    */
-
-    if(
-        action.includes("withdraw") ||
-        action.includes("withdrawal")
-    ){
-
-        return "WITHDRAW";
-
-    }
-
-
-    if(
-        action.includes("deposit") ||
-        action.includes("recharge") ||
-        action.includes("add money") ||
-        action.includes("credit")
-    ){
-
-        return "DEPOSIT";
-
-    }
-
-
-    /*
-       अगर history में game information है
-       तो game/bet माना जाएगा
-    */
-
-    if(
-        Number(row.total || 0) > 0 &&
-        (
-            market ||
-            data
+    return new Date(
+        date.toLocaleString(
+            "en-US",
+            {
+                timeZone:"Asia/Kolkata"
+            }
         )
-    ){
-
-        return "GAME / BET";
-
-    }
-
-
-    if(Number(row.win_amount || 0) > 0){
-
-        return "WINNING";
-
-    }
-
-
-    if(Number(row.commission || 0) > 0){
-
-        return "COMMISSION";
-
-    }
-
-
-    if(action){
-
-        return String(row.action_type);
-
-    }
-
-
-    return "TRANSACTION";
+    );
 
 }
 
 
+/* =========================================
+   DATE RANGE
+   5 AM -> Next Day 5 AM
+========================================= */
 
-function movementFromBalances(row){
+function getStatementRange(gameDate){
 
-    const oldBalance =
-        row.old_balance === null ||
-        row.old_balance === undefined
-            ? null
-            : Number(row.old_balance);
+    const start =
+        new Date(
+            gameDate + "T05:00:00+05:30"
+        );
 
-    const newBalance =
-        row.new_balance === null ||
-        row.new_balance === undefined
-            ? null
-            : Number(row.new_balance);
-
-
-    if(
-        oldBalance !== null &&
-        newBalance !== null
-    ){
-
-        const difference =
-            newBalance - oldBalance;
-
-        if(difference > 0){
-
-            return {
-                debit:0,
-                credit:difference
-            };
-
-        }
-
-        if(difference < 0){
-
-            return {
-                debit:Math.abs(difference),
-                credit:0
-            };
-
-        }
-
-        return {
-            debit:0,
-            credit:0
-        };
-
-    }
-
+    const end =
+        new Date(start.getTime() + 24*60*60*1000);
 
     return {
-        debit:0,
-        credit:0
+        start,
+        end
     };
 
 }
 
 
+/* =========================================
+   LOAD USERS
+========================================= */
 
-async function loadOpeningBalance(
-    userId,
-    selectedDate
-){
+async function loadUsers(){
 
-    const start =
-        gameDateStart(selectedDate);
+    try{
 
-    /*
-       selected day शुरू होने से पहले
-       सबसे आखिरी history balance
-    */
+        const {data,error} =
+            await supabaseClient
+            .from("login")
+            .select("id,name,mobile,balance")
+            .order("id",{ascending:true});
 
-    const {data,error} = await client
-        .from("history")
-        .select(
-            "id,created_at,new_balance,old_balance"
-        )
-        .eq("user_id",String(userId))
-        .lt("created_at",start)
-        .order("created_at",{ascending:false})
-        .limit(1);
-
-    if(error){
-
-        return 0;
-
-    }
-
-    if(data && data.length){
-
-        const row = data[0];
-
-        if(
-            row.new_balance !== null &&
-            row.new_balance !== undefined
-        ){
-
-            return Number(row.new_balance);
-
+        if(error){
+            throw error;
         }
 
-    }
+        userSelect.innerHTML =
+        `<option value="">Select User ID</option>`;
 
-    return 0;
+        (data || []).forEach(user => {
 
-}
+            const option =
+            document.createElement("option");
 
+            option.value =
+                user.id;
 
+            option.textContent =
+                `${user.id} - ${user.name || ""} - ${user.mobile || ""}`;
 
-async function loadHistory(
-    userId,
-    selectedDate
-){
+            option.dataset.name =
+                user.name || "";
 
-    const start =
-        gameDateStart(selectedDate);
+            option.dataset.mobile =
+                user.mobile || "";
 
-    const end =
-        gameDateStart(
-            nextGameDate(selectedDate)
-        );
+            option.dataset.balance =
+                user.balance || 0;
 
+            userSelect.appendChild(option);
 
-    /*
-       History की पूरी entries.
-       कोई artificial 20 limit नहीं.
-    */
+        });
 
-    const {data,error} = await client
-        .from("history")
-        .select(`
-            id,
-            user_id,
-            market,
-            data,
-            total,
-            created_at,
-            status,
-            win_amount,
-            commission,
-            action_amount,
-            action_type,
-            old_balance,
-            new_balance,
-            admin_action,
-            admin_user_id,
-            ref_by,
-            game_date
-        `)
-        .eq("user_id",String(userId))
-        .gte("created_at",start)
-        .lt("created_at",end)
-        .order("created_at",{ascending:true});
+    }catch(error){
 
-    if(error){
+        console.error(error);
 
-        throw new Error(
-            "History load error: " +
+        showError(
+            "User list load nahi hui: " +
             error.message
         );
 
     }
 
-    return data || [];
-
 }
 
 
+/* =========================================
+   LOAD STATEMENT DATES
+   history.game_date se
+========================================= */
 
-async function loadDeposits(
-    userId,
-    selectedDate
-){
+async function loadDates(){
 
-    const start =
-        gameDateStart(selectedDate);
+    try{
 
-    const end =
-        gameDateStart(
-            nextGameDate(selectedDate)
+        const data =
+            await fetchAllRows(
+                "history",
+                "game_date",
+                [
+                    {
+                        type:"not",
+                        column:"game_date",
+                        operator:"is",
+                        value:null
+                    }
+                ],
+                "game_date"
+            );
+
+        const dates = [...new Set(
+            (data || [])
+            .map(row => row.game_date)
+            .filter(Boolean)
+        )];
+
+        dates.sort(
+            (a,b) =>
+            new Date(b) - new Date(a)
         );
 
+        dateSelect.innerHTML =
+        `<option value="">Select Date</option>`;
 
-    /*
-       Actual deposits table.
-       Accepted/success/completed जैसी status
-       को actual deposit माना जाएगा.
-    */
+        dates.forEach(date => {
 
-    const {data,error} = await client
-        .from("deposits")
-        .select(`
-            id,
-            user_id,
-            amount,
-            status,
-            utr,
-            created_at
-        `)
-        .eq("user_id",userId)
-        .gte("created_at",start)
-        .lt("created_at",end)
-        .order("created_at",{ascending:true});
+            const option =
+                document.createElement("option");
 
-    if(error){
+            option.value = date;
 
-        return [];
+            const d =
+                new Date(date + "T00:00:00");
+
+            option.textContent =
+                d.toLocaleDateString(
+                    "en-IN",
+                    {
+                        day:"2-digit",
+                        month:"2-digit",
+                        year:"numeric"
+                    }
+                );
+
+            dateSelect.appendChild(option);
+
+        });
+
+    }catch(error){
+
+        console.error(error);
+
+        showError(
+            "Date list load nahi hui: " +
+            error.message
+        );
 
     }
 
-    return (data || []).filter(row => {
+}
 
-        const status =
-            String(row.status || "")
-            .toLowerCase();
 
-        return [
-            "accepted",
-            "approved",
-            "success",
-            "successful",
-            "completed",
-            "complete",
-            "clear",
-            "cleared"
-        ].includes(status);
+/* =========================================
+   ACTION TYPE CHECK
+========================================= */
 
-    });
+function isWithdrawAction(action){
+
+    const a =
+        String(action || "").toLowerCase();
+
+    return (
+        a.includes("withdraw") ||
+        a.includes("debit") ||
+        a.includes("deduct") ||
+        a.includes("minus")
+    );
 
 }
 
 
+function isCreditAction(action){
 
-async function loadAdminHistory(
-    userId,
-    selectedDate
-){
+    const a =
+        String(action || "").toLowerCase();
 
-    const start =
-        gameDateStart(selectedDate);
-
-    const end =
-        gameDateStart(
-            nextGameDate(selectedDate)
-        );
-
-
-    const {data,error} = await client
-        .from("admin_history")
-        .select(`
-            id,
-            user_id,
-            admin_user_id,
-            action_type,
-            action_amount,
-            old_balance,
-            new_balance,
-            status,
-            created_at
-        `)
-        .eq("user_id",userId)
-        .gte("created_at",start)
-        .lt("created_at",end)
-        .order("created_at",{ascending:true});
-
-    if(error){
-
-        return [];
-
-    }
-
-    return data || [];
+    return (
+        a.includes("deposit") ||
+        a.includes("add") ||
+        a.includes("recharge") ||
+        a.includes("credit") ||
+        a.includes("topup") ||
+        a.includes("top-up")
+    );
 
 }
 
 
-
-async function loadWinnings(
-    userId,
-    selectedDate
-){
-
-    const start =
-        gameDateStart(selectedDate);
-
-    const end =
-        gameDateStart(
-            nextGameDate(selectedDate)
-        );
-
-
-    /*
-       Table का नाम अगर आपके project में
-       "wining" है तो वही use किया गया है.
-    */
-
-    const {data,error} = await client
-        .from("wining")
-        .select("*")
-        .eq("user_id",String(userId))
-        .gte("created_at",start)
-        .lt("created_at",end)
-        .order("created_at",{ascending:true});
-
-    if(error){
-
-        return [];
-
-    }
-
-    return data || [];
-
-}
-
-
+/* =========================================
+   LOAD STATEMENT
+========================================= */
 
 async function loadStatement(){
 
-    clearError();
+    hideError();
 
     const userId =
-        document.getElementById("userSelect").value;
+        userSelect.value;
 
     const selectedDate =
-        document.getElementById("dateSelect").value;
+        dateSelect.value;
 
+    if(!userId || !selectedDate){
 
-    if(!userId){
-
-        showError("पहले User ID select करें.");
-
-        return;
-
-    }
-
-
-    if(!selectedDate){
-
-        showError("पहले Statement Date select करें.");
-
-        return;
-
-    }
-
-
-    const user =
-        getUser(userId);
-
-
-    document.getElementById("infoUserId")
-        .textContent =
-        user ? user.id : userId;
-
-    document.getElementById("infoName")
-        .textContent =
-        user?.name || "-";
-
-    document.getElementById("infoMobile")
-        .textContent =
-        user?.mobile || "-";
-
-
-    const dateParts =
-        selectedDate.split("-");
-
-    document.getElementById("statementDateText")
-        .textContent =
-        `Statement: ${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
-
-
-    const body =
-        document.getElementById("statementBody");
-
-    body.innerHTML = `
-        <tr>
-            <td colspan="5" class="loading">
-                Statement loading...
+        statementBody.innerHTML =
+        `<tr>
+            <td colspan="4" class="empty">
+                Select User ID and Date
             </td>
-        </tr>
-    `;
+        </tr>`;
+
+        userInfo.style.display = "none";
+        walletBox.style.display = "none";
+
+        return;
+    }
+
+    loading.style.display = "block";
+
+    statementBody.innerHTML = "";
+
+    const selectedOption =
+        userSelect.options[
+            userSelect.selectedIndex
+        ];
+
+    document.getElementById("showUserId").innerText =
+        userId;
+
+    document.getElementById("showName").innerText =
+        selectedOption.dataset.name || "-";
+
+    document.getElementById("showMobile").innerText =
+        selectedOption.dataset.mobile || "-";
+
+    document.getElementById("showDate").innerText =
+        new Date(
+            selectedDate + "T00:00:00"
+        ).toLocaleDateString(
+            "en-IN",
+            {
+                day:"2-digit",
+                month:"2-digit",
+                year:"numeric"
+            }
+        );
+
+    userInfo.style.display = "block";
 
 
     try{
 
-        /*
-           सभी existing sources एक साथ पढ़ें
-        */
+        const range =
+            getStatementRange(selectedDate);
+
+        const startISO =
+            range.start.toISOString();
+
+        const endISO =
+            range.end.toISOString();
+
+
+        /* =====================================
+           1. HISTORY
+        ===================================== */
+
+        const historyRows =
+            await fetchAllRows(
+                "history",
+                "id,user_id,market,data,total,created_at,status,win_amount,typing,image,commission,mode,admin_action,admin_user_id,action_amount,action_type,ref_by,game_date",
+                [
+                    {
+                        type:"eq",
+                        column:"user_id",
+                        value:String(userId)
+                    },
+                    {
+                        type:"eq",
+                        column:"game_date",
+                        value:selectedDate
+                    }
+                ],
+                "created_at"
+            );
+
+
+        /* =====================================
+           2. DEPOSITS
+        ===================================== */
+
+        const depositRows =
+            await fetchAllRows(
+                "deposits",
+                "id,user_id,amount,status,utr,created_at",
+                [
+                    {
+                        type:"eq",
+                        column:"user_id",
+                        value:Number(userId)
+                    },
+                    {
+                        type:"gte",
+                        column:"created_at",
+                        value:startISO
+                    },
+                    {
+                        type:"lt",
+                        column:"created_at",
+                        value:endISO
+                    }
+                ],
+                "created_at"
+            );
+
+
+        /* =====================================
+           3. ADMIN HISTORY
+        ===================================== */
+
+        let adminHistoryRows = [];
+
+        try{
+
+            adminHistoryRows =
+                await fetchAllRows(
+                    "admin_history",
+                    "id,user_id,admin_user_id,action_type,action_amount,old_balance,new_balance,status,created_at",
+                    [
+                        {
+                            type:"eq",
+                            column:"user_id",
+                            value:Number(userId)
+                        },
+                        {
+                            type:"gte",
+                            column:"created_at",
+                            value:startISO
+                        },
+                        {
+                            type:"lt",
+                            column:"created_at",
+                            value:endISO
+                        }
+                    ],
+                    "created_at"
+                );
+
+        }catch(error){
+
+            console.warn(
+                "admin_history load nahi hua:",
+                error
+            );
 
-        const [
-            historyRows,
-            deposits,
-            adminRows,
-            winnings,
-            openingBalance
-        ] = await Promise.all([
+            adminHistoryRows = [];
 
-            loadHistory(
-                userId,
-                selectedDate
-            ),
+        }
 
-            loadDeposits(
-                userId,
-                selectedDate
-            ),
 
-            loadAdminHistory(
-                userId,
-                selectedDate
-            ),
+        /* =====================================
+           4. ADMIN WINING
+        ===================================== */
 
-            loadWinnings(
-                userId,
-                selectedDate
-            ),
+        let adminWinningRows = [];
 
-            loadOpeningBalance(
-                userId,
-                selectedDate
-            )
+        try{
 
-        ]);
+            adminWinningRows =
+                await fetchAllRows(
+                    "admin wining",
+                    "id,user_id,amount,created_at,market",
+                    [
+                        {
+                            type:"eq",
+                            column:"user_id",
+                            value:String(userId)
+                        },
+                        {
+                            type:"gte",
+                            column:"created_at",
+                            value:startISO
+                        },
+                        {
+                            type:"lt",
+                            column:"created_at",
+                            value:endISO
+                        }
+                    ],
+                    "created_at"
+                );
 
+        }catch(error){
 
-        /*
-           Combined bank-style ledger
-        */
+            console.warn(
+                "admin wining load nahi hua:",
+                error
+            );
 
-        let ledger = [];
+            adminWinningRows = [];
 
+        }
 
-        /*
-           Opening balance को first row
-           के रूप में दिखाएँ
-        */
 
-        ledger.push({
+        /* =====================================
+           STATEMENT ARRAY
+        ===================================== */
 
-            date:
-                gameDateStart(selectedDate),
+        let statement = [];
 
-            particulars:
-                "Opening Balance",
 
-            debit:0,
+        /* =====================================
+           DEPOSIT
+        ===================================== */
 
-            credit:0,
+        (depositRows || []).forEach(row => {
 
-            balance:
-                Number(openingBalance || 0),
-
-            sourceOrder:0
-
-        });
-
-
-        /*
-           Deposits
-        */
-
-        deposits.forEach(row => {
-
-            ledger.push({
-
-                date:row.created_at,
-
-                particulars:
-                    `Deposit${row.utr ? " - UTR " + row.utr : ""}`,
-
-                debit:0,
-
-                credit:Number(row.amount || 0),
-
-                balance:null,
-
-                sourceOrder:1,
-
-                status:row.status
-
-            });
-
-        });
-
-
-        /*
-           History rows.
-           Game amount = Debit
-           Winning/Commission = Credit
-           लेकिन balance movement होने पर
-           actual old/new balance को प्राथमिकता देंगे.
-        */
-
-        historyRows.forEach(row => {
-
-            const type =
-                classifyHistory(row);
-
-            const movement =
-                movementFromBalances(row);
-
-
-            let debit = 0;
-            let credit = 0;
-
-
-            /*
-               अगर actual balance movement मौजूद है
-               तो उसी को ledger movement मानें.
-            */
-
-            if(
-                row.old_balance !== null &&
-                row.old_balance !== undefined &&
-                row.new_balance !== null &&
-                row.new_balance !== undefined
-            ){
-
-                debit =
-                    movement.debit;
-
-                credit =
-                    movement.credit;
-
-            }
-            else{
-
-                /*
-                   Balance columns unavailable हों
-                   तो transaction type से fallback
-                */
-
-                if(type === "GAME / BET"){
-
-                    debit =
-                        Number(row.total || 0);
-
-                }
-
-                if(type === "WITHDRAW"){
-
-                    debit =
-                        Number(
-                            row.action_amount ||
-                            row.total ||
-                            0
-                        );
-
-                }
-
-                if(type === "DEPOSIT"){
-
-                    credit =
-                        Number(
-                            row.action_amount ||
-                            row.total ||
-                            0
-                        );
-
-                }
-
-                if(type === "WINNING"){
-
-                    credit =
-                        Number(row.win_amount || 0);
-
-                }
-
-                if(type === "COMMISSION"){
-
-                    credit =
-                        Number(row.commission || 0);
-
-                }
-
-            }
-
-
-            let particulars =
-                type;
-
-
-            if(row.market){
-
-                particulars +=
-                    " - " +
-                    row.market;
-
-            }
-
-
-            ledger.push({
-
-                date:row.created_at,
-
-                particulars:particulars,
-
-                debit:debit,
-
-                credit:credit,
-
-                balance:
-                    row.new_balance !== null &&
-                    row.new_balance !== undefined
-                        ? Number(row.new_balance)
-                        : null,
-
-                sourceOrder:2,
-
-                status:row.status,
-
-                historyId:row.id
-
-            });
-
-        });
-
-
-        /*
-           Admin history
-           केवल उन actions को ledger में डालें
-           जो history में duplicate नहीं हैं.
-        */
-
-        adminRows.forEach(row => {
-
-            const action =
-                String(row.action_type || "")
+            const status =
+                String(row.status || "")
                 .toLowerCase();
 
+            const accepted =
+                status === "" ||
+                status === "accepted" ||
+                status === "approved" ||
+                status === "success" ||
+                status === "successful" ||
+                status === "completed" ||
+                status === "complete";
 
-            /*
-               यदि same transaction history में
-               already मौजूद है तो duplicate रोकने
-               के लिए balance movement check करें.
-            */
-
-            const isWalletAction =
-                action.includes("withdraw") ||
-                action.includes("withdrawal") ||
-                action.includes("deposit") ||
-                action.includes("recharge") ||
-                action.includes("add") ||
-                action.includes("credit") ||
-                action.includes("debit");
-
-
-            if(!isWalletAction){
-
+            if(!accepted){
                 return;
-
             }
 
+            const amount =
+                Number(row.amount || 0);
 
-            const movement =
-                movementFromBalances(row);
-
-
-            let debit =
-                movement.debit;
-
-            let credit =
-                movement.credit;
-
-
-            if(
-                debit === 0 &&
-                credit === 0
-            ){
-
-                const amount =
-                    Number(
-                        row.action_amount || 0
-                    );
-
-
-                if(
-                    action.includes("withdraw") ||
-                    action.includes("debit")
-                ){
-
-                    debit = amount;
-
-                }
-                else{
-
-                    credit = amount;
-
-                }
-
+            if(amount <= 0){
+                return;
             }
 
+            statement.push({
 
-            ledger.push({
+                id:
+                    "deposit_" + row.id,
 
-                date:row.created_at,
+                source:
+                    "deposit",
+
+                created_at:
+                    row.created_at,
 
                 particulars:
-                    row.action_type ||
-                    "Wallet Transaction",
+                    "Deposit" +
+                    (
+                        row.utr
+                        ? " - UTR " + row.utr
+                        : ""
+                    ),
 
-                debit:debit,
+                debit:
+                    0,
 
-                credit:credit,
-
-                balance:
-                    row.new_balance !== null &&
-                    row.new_balance !== undefined
-                        ? Number(row.new_balance)
-                        : null,
-
-                sourceOrder:3,
-
-                status:row.status,
-
-                historyId:
-                    "ADMIN-" + row.id
+                credit:
+                    amount
 
             });
 
         });
 
 
-        /*
-           Winning table.
-           केवल तभी add करें जब history में
-           winning movement नहीं मिला हो.
-        */
+        /* =====================================
+           ADMIN HISTORY
+        ===================================== */
 
-        if(winnings.length){
+        (adminHistoryRows || []).forEach(row => {
 
-            const historyWinning =
-                historyRows.reduce(
-                    (sum,row) =>
-                        sum +
-                        Number(row.win_amount || 0),
-                    0
+            const amount =
+                Number(
+                    row.action_amount || 0
                 );
 
+            if(amount <= 0){
+                return;
+            }
 
-            const tableWinning =
-                winnings.reduce(
-                    (sum,row) =>
-                        sum +
-                        Number(
-                            row.amount ||
-                            row.win_amount ||
-                            0
-                        ),
-                    0
-                );
+            const action =
+                String(
+                    row.action_type || ""
+                ).toLowerCase();
+
+
+            if(isWithdrawAction(action)){
+
+                statement.push({
+
+                    id:
+                        "admin_withdraw_" +
+                        row.id,
+
+                    source:
+                        "admin_history",
+
+                    created_at:
+                        row.created_at,
+
+                    particulars:
+                        "Withdraw",
+
+                    debit:
+                        amount,
+
+                    credit:
+                        0,
+
+                    actualBalance:
+                        row.new_balance
+
+                });
+
+                return;
+            }
+
+
+            if(isCreditAction(action)){
+
+                /*
+                   Deposit agar deposits table me already
+                   aa chuka hai to duplicate avoid karne ki
+                   koshish neeche hogi.
+                */
+
+                statement.push({
+
+                    id:
+                        "admin_credit_" +
+                        row.id,
+
+                    source:
+                        "admin_history",
+
+                    created_at:
+                        row.created_at,
+
+                    particulars:
+                        action.includes("deposit")
+                        ? "Deposit"
+                        : "Wallet Credit",
+
+                    debit:
+                        0,
+
+                    credit:
+                        amount,
+
+                    actualBalance:
+                        row.new_balance
+
+                });
+
+                return;
+            }
+
+        });
+
+
+        /* =====================================
+           HISTORY
+        ===================================== */
+
+        let historyHasWinning = false;
+
+
+        (historyRows || []).forEach(row => {
+
+            const total =
+                Number(row.total || 0);
+
+            const winning =
+                Number(row.win_amount || 0);
+
+            const action =
+                String(
+                    row.action_type || ""
+                ).toLowerCase();
 
 
             /*
-               अगर history में winning पहले से
-               है तो duplicate नहीं करेंगे.
+              Agar history me explicit withdraw hai
             */
 
             if(
-                historyWinning === 0 &&
-                tableWinning > 0
+                isWithdrawAction(action) &&
+                Number(row.action_amount || 0) > 0
             ){
 
-                winnings.forEach(row => {
+                statement.push({
 
-                    const amount =
-                        Number(
-                            row.amount ||
-                            row.win_amount ||
-                            0
-                        );
+                    id:
+                        "history_action_" +
+                        row.id,
 
+                    source:
+                        "history",
 
-                    ledger.push({
+                    created_at:
+                        row.created_at,
 
-                        date:row.created_at,
+                    particulars:
+                        "Withdraw",
 
-                        particulars:
-                            `Winning${row.market ? " - " + row.market : ""}`,
+                    debit:
+                        Number(row.action_amount),
 
-                        debit:0,
-
-                        credit:amount,
-
-                        balance:
-                            row.new_balance !== null &&
-                            row.new_balance !== undefined
-                                ? Number(row.new_balance)
-                                : null,
-
-                        sourceOrder:4,
-
-                        status:row.status
-
-                    });
+                    credit:
+                        0
 
                 });
 
             }
 
+            /*
+              Agar history me explicit credit/deposit hai
+            */
+
+            else if(
+                isCreditAction(action) &&
+                Number(row.action_amount || 0) > 0
+            ){
+
+                statement.push({
+
+                    id:
+                        "history_credit_" +
+                        row.id,
+
+                    source:
+                        "history",
+
+                    created_at:
+                        row.created_at,
+
+                    particulars:
+                        "Wallet Credit",
+
+                    debit:
+                        0,
+
+                    credit:
+                        Number(row.action_amount)
+
+                });
+
+            }
+
+            /*
+              Normal game entry
+            */
+
+            else if(total > 0){
+
+                statement.push({
+
+                    id:
+                        "history_game_" +
+                        row.id,
+
+                    source:
+                        "history",
+
+                    created_at:
+                        row.created_at,
+
+                    particulars:
+                        (
+                            row.market
+                            ? row.market + " - "
+                            : ""
+                        ) +
+                        "Game / Bet",
+
+                    debit:
+                        total,
+
+                    credit:
+                        0
+
+                });
+
+            }
+
+
+            /*
+              Winning
+            */
+
+            if(winning > 0){
+
+                historyHasWinning = true;
+
+                statement.push({
+
+                    id:
+                        "history_win_" +
+                        row.id,
+
+                    source:
+                        "history",
+
+                    created_at:
+                        row.created_at,
+
+                    particulars:
+                        (
+                            row.market
+                            ? row.market + " - "
+                            : ""
+                        ) +
+                        "Winning",
+
+                    debit:
+                        0,
+
+                    credit:
+                        winning
+
+                });
+
+            }
+
+        });
+
+
+        /* =====================================
+           ADMIN WINING
+           
+           Agar history me winning nahi hai tabhi
+           admin wining ko credit me lenge.
+           Isse duplicate winning se bachenge.
+        ===================================== */
+
+        if(!historyHasWinning){
+
+            (adminWinningRows || []).forEach(row => {
+
+                const amount =
+                    Number(row.amount || 0);
+
+                if(amount <= 0){
+                    return;
+                }
+
+                statement.push({
+
+                    id:
+                        "admin_wining_" +
+                        row.id,
+
+                    source:
+                        "admin_wining",
+
+                    created_at:
+                        row.created_at,
+
+                    particulars:
+                        (
+                            row.market
+                            ? row.market + " - "
+                            : ""
+                        ) +
+                        "Winning",
+
+                    debit:
+                        0,
+
+                    credit:
+                        amount
+
+                });
+
+            });
+
         }
 
 
-        /*
-           Time + source order
-        */
+        /* =====================================
+           DUPLICATE DEPOSIT REMOVE
+        ===================================== */
 
-        ledger.sort((a,b) => {
+        const finalStatement = [];
 
-            const da =
-                new Date(a.date).getTime();
-
-            const db =
-                new Date(b.date).getTime();
-
-
-            if(da !== db){
-
-                return da - db;
-
-            }
-
-
-            return (
-                Number(a.sourceOrder || 0) -
-                Number(b.sourceOrder || 0)
-            );
-
-        });
-
-
-        /*
-           Balance calculate करें.
-           अगर row में actual new_balance है
-           तो वही दिखाएँ.
-           बाकी rows के लिए previous balance
-           + credit - debit.
-        */
-
-        let runningBalance =
-            Number(openingBalance || 0);
-
-
-        ledger.forEach((row,index) => {
-
-            if(index === 0){
-
-                row.balance =
-                    Number(openingBalance || 0);
-
-                runningBalance =
-                    row.balance;
-
-                return;
-
-            }
-
+        statement.forEach(row => {
 
             if(
-                row.balance !== null &&
-                row.balance !== undefined
+                row.source === "admin_history" &&
+                row.credit > 0
             ){
 
-                runningBalance =
-                    Number(row.balance);
+                const duplicate =
+                    finalStatement.some(existing => {
+
+                        if(existing.source !== "deposit"){
+                            return false;
+                        }
+
+                        if(existing.credit !== row.credit){
+                            return false;
+                        }
+
+                        const t1 =
+                            new Date(
+                                existing.created_at
+                            ).getTime();
+
+                        const t2 =
+                            new Date(
+                                row.created_at
+                            ).getTime();
+
+                        return Math.abs(t1 - t2) <= 5 * 60 * 1000;
+
+                    });
+
+                if(duplicate){
+                    return;
+                }
 
             }
-            else{
 
-                runningBalance =
-                    runningBalance +
-                    Number(row.credit || 0) -
-                    Number(row.debit || 0);
-
-                row.balance =
-                    runningBalance;
-
-            }
+            finalStatement.push(row);
 
         });
 
 
-        currentStatementRows =
-            ledger;
+        /* =====================================
+           SORT BY TIME
+        ===================================== */
 
-
-        renderStatement(
-            ledger,
-            openingBalance
+        finalStatement.sort(
+            (a,b) =>
+                new Date(a.created_at) -
+                new Date(b.created_at)
         );
 
 
-        /*
-           Current login wallet
-        */
+        /* =====================================
+           TOTAL
+        ===================================== */
 
-        const {data:loginData} =
-            await client
-            .from("login")
-            .select("balance")
-            .eq("id",userId)
-            .maybeSingle();
+        let totalDebit = 0;
+        let totalCredit = 0;
 
 
-        document.getElementById("currentWallet")
-            .textContent =
-            money(
-                loginData?.balance || 0
+        finalStatement.forEach(row => {
+
+            totalDebit +=
+                Number(row.debit || 0);
+
+            totalCredit +=
+                Number(row.credit || 0);
+
+        });
+
+
+        /* =====================================
+           TABLE
+        ===================================== */
+
+        if(finalStatement.length === 0){
+
+            statementBody.innerHTML =
+            `<tr>
+                <td colspan="4" class="empty">
+                    Is date par koi transaction nahi mila.
+                </td>
+            </tr>`;
+
+        }else{
+
+            let html = "";
+
+            finalStatement.forEach(row => {
+
+                const debit =
+                    Number(row.debit || 0);
+
+                const credit =
+                    Number(row.credit || 0);
+
+
+                html += `
+
+                <tr>
+
+                    <td>
+                        ${formatDateTime(row.created_at)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(row.particulars)}
+                    </td>
+
+                    <td class="debit">
+                        ${
+                            debit > 0
+                            ? "₹" + money(debit)
+                            : "-"
+                        }
+                    </td>
+
+                    <td class="credit">
+                        ${
+                            credit > 0
+                            ? "₹" + money(credit)
+                            : "-"
+                        }
+                    </td>
+
+                </tr>
+
+                `;
+
+            });
+
+
+            html += `
+
+            <tr class="total-row">
+
+                <td colspan="2">
+                    TOTAL
+                </td>
+
+                <td class="total-debit">
+                    ₹${money(totalDebit)}
+                </td>
+
+                <td class="total-credit">
+                    ₹${money(totalCredit)}
+                </td>
+
+            </tr>
+
+            `;
+
+
+            statementBody.innerHTML =
+                html;
+
+        }
+
+
+        /* =====================================
+           CURRENT WALLET
+        ===================================== */
+
+        const selectedBalance =
+            Number(
+                selectedOption.dataset.balance || 0
             );
 
-    }
-    catch(error){
+        currentWallet.innerText =
+            money(selectedBalance);
+
+        walletBox.style.display = "block";
+
+
+    }catch(error){
 
         console.error(error);
 
+        statementBody.innerHTML =
+        `<tr>
+            <td colspan="4" class="empty">
+                Statement load nahi hui.
+            </td>
+        </tr>`;
+
         showError(
-            error.message ||
-            "Statement load नहीं हुई."
+            "Statement load error: " +
+            error.message
         );
 
-        body.innerHTML = `
-            <tr>
-                <td colspan="5" class="empty">
-                    Statement load नहीं हुई
-                </td>
-            </tr>
-        `;
+    }finally{
+
+        loading.style.display = "none";
 
     }
 
 }
 
 
+/* =========================================
+   HTML SAFE
+========================================= */
 
-function renderStatement(
-    ledger,
-    openingBalance
-){
+function escapeHtml(value){
 
-    const body =
-        document.getElementById("statementBody");
-
-    body.innerHTML = "";
-
-
-    if(!ledger.length){
-
-        body.innerHTML = `
-            <tr>
-                <td colspan="5" class="empty">
-                    कोई transaction नहीं मिली
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    let totalDebit = 0;
-    let totalCredit = 0;
-
-
-    ledger.forEach((row,index) => {
-
-        const debit =
-            Number(row.debit || 0);
-
-        const credit =
-            Number(row.credit || 0);
-
-        totalDebit += debit;
-        totalCredit += credit;
-
-
-        const tr =
-            document.createElement("tr");
-
-
-        tr.innerHTML = `
-
-            <td class="center">
-                ${escapeHTML(
-                    formatDateTime(row.date)
-                )}
-            </td>
-
-            <td>
-                ${escapeHTML(
-                    row.particulars || ""
-                )}
-            </td>
-
-            <td class="right debit">
-                ${
-                    debit > 0
-                        ? money(debit)
-                        : "-"
-                }
-            </td>
-
-            <td class="right credit">
-                ${
-                    credit > 0
-                        ? money(credit)
-                        : "-"
-                }
-            </td>
-
-            <td class="right balance">
-                ${money(row.balance)}
-            </td>
-
-        `;
-
-
-        body.appendChild(tr);
-
-    });
-
-
-    document.getElementById("totalDebit")
-        .textContent =
-        money(totalDebit);
-
-
-    document.getElementById("totalCredit")
-        .textContent =
-        money(totalCredit);
-
-
-    const closing =
-        ledger.length
-            ? Number(
-                ledger[ledger.length - 1]
-                    .balance || 0
-              )
-            : Number(openingBalance || 0);
-
-
-    document.getElementById("closingBalance")
-        .textContent =
-        money(closing);
-
-
-    document.getElementById("openingBalance")
-        .textContent =
-        money(openingBalance);
-
-
-    document.getElementById("summaryDebit")
-        .textContent =
-        money(totalDebit);
-
-
-    document.getElementById("summaryCredit")
-        .textContent =
-        money(totalCredit);
-
-
-    document.getElementById("summaryClosing")
-        .textContent =
-        money(closing);
-
-
-    document.getElementById("transactionCount")
-        .textContent =
-        Math.max(0,ledger.length - 1);
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
 
+/* =========================================
+   EVENTS
+========================================= */
 
-function csvValue(value){
-
-    const text =
-        String(value ?? "");
-
-    return `"${text.replace(/"/g,'""')}"`;
-
-}
-
-
-
-function downloadCSV(){
-
-    if(
-        !currentStatementRows ||
-        currentStatementRows.length === 0
-    ){
-
-        alert(
-            "पहले Statement Search करें."
-        );
-
-        return;
-
-    }
-
-
-    const rows = [];
-
-
-    rows.push([
-        "Date / Time",
-        "Particulars",
-        "Debit",
-        "Credit",
-        "Balance"
-    ]);
-
-
-    currentStatementRows.forEach(row => {
-
-        rows.push([
-
-            formatDateTime(row.date),
-
-            row.particulars || "",
-
-            Number(row.debit || 0),
-
-            Number(row.credit || 0),
-
-            Number(row.balance || 0)
-
-        ]);
-
-    });
-
-
-    const csv =
-        rows
-        .map(row =>
-            row.map(csvValue).join(",")
-        )
-        .join("\n");
-
-
-    const blob =
-        new Blob(
-            [csv],
-            {
-                type:"text/csv;charset=utf-8;"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(blob);
-
-
-    const a =
-        document.createElement("a");
-
-    a.href = url;
-
-    const userId =
-        document.getElementById(
-            "userSelect"
-        ).value || "user";
-
-    const date =
-        document.getElementById(
-            "dateSelect"
-        ).value || "statement";
-
-
-    a.download =
-        `bank_statement_${userId}_${date}.csv`;
-
-    document.body.appendChild(a);
-
-    a.click();
-
-    a.remove();
-
-    URL.revokeObjectURL(url);
-
-}
-
-
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async function(){
-
-        await loadUsers();
-
-        await loadDates();
-
-    }
+userSelect.addEventListener(
+    "change",
+    loadStatement
 );
+
+dateSelect.addEventListener(
+    "change",
+    loadStatement
+);
+
+
+/* =========================================
+   START
+========================================= */
+
+async function start(){
+
+    await loadUsers();
+
+    await loadDates();
+
+}
+
+start();
 
 </script>
 
