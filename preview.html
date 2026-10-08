@@ -16,7 +16,6 @@
 
 body{
     margin:0;
-    padding:0;
     font-family:Arial,sans-serif;
     background:#f2f3f5;
     color:#111;
@@ -213,7 +212,7 @@ th{
 <div id="errorBox" class="error"></div>
 
 
-<!-- ================= CONTROLS ================= -->
+<!-- CONTROLS -->
 
 <div class="controls">
 
@@ -225,12 +224,10 @@ th{
         </select>
     </div>
 
-
     <div>
         <label>From Date</label>
         <input type="date" id="fromDate">
     </div>
-
 
     <div>
         <label>To Date</label>
@@ -240,11 +237,13 @@ th{
 </div>
 
 
-<!-- ================= USER INFO ================= -->
+<!-- USER INFO -->
 
-<div id="userInfo"
-     class="user-info"
-     style="display:none;">
+<div
+    id="userInfo"
+    class="user-info"
+    style="display:none;"
+>
 
     <div class="info-box">
 
@@ -310,12 +309,13 @@ th{
 
 <div
     id="loading"
-    class="loading">
+    class="loading"
+>
     Loading...
 </div>
 
 
-<!-- ================= SUMMARY ================= -->
+<!-- SUMMARY -->
 
 <div class="summary">
 
@@ -366,7 +366,7 @@ th{
 </div>
 
 
-<!-- ================= TABLE ================= -->
+<!-- STATEMENT -->
 
 <div class="table-wrap">
 
@@ -376,25 +376,15 @@ th{
 
 <tr>
 
-<th>
-Date / Time
-</th>
+<th>Date / Time</th>
 
-<th>
-Particulars
-</th>
+<th>Particulars</th>
 
-<th>
-Debit
-</th>
+<th>Debit</th>
 
-<th>
-Credit
-</th>
+<th>Credit</th>
 
-<th>
-Balance
-</th>
+<th>Balance</th>
 
 </tr>
 
@@ -406,11 +396,10 @@ Balance
 <tr>
 
 <td
-colspan="5"
-class="empty">
-
-Select User ID
-
+    colspan="5"
+    class="empty"
+>
+    Select User ID
 </td>
 
 </tr>
@@ -428,23 +417,14 @@ Select User ID
 
 
 /* =========================================================
-   SUPABASE
+   SUPABASE CONNECTION
    ========================================================= */
 
 const SUPABASE_URL =
 "https://katbdbzoufiblnnsoxkk.supabase.co";
 
-
-/*
-   YAHAN APNI WORKING PAGE WALI
-   ANON / PUBLIC KEY LAGAO.
-
-   Service Role Key MAT lagana.
-*/
-
 const SUPABASE_KEY =
-"sb_publishable_--fdpQMmSlUyt2ywjUErgQ_LXGvQH-a";
-
+"YOUR_SUPABASE_ANON_KEY";
 
 const supabaseClient =
 supabase.createClient(
@@ -506,19 +486,20 @@ document.getElementById("totalCredit");
 
 function money(value){
 
-    value = Number(value || 0);
+    value =
+        Number(value || 0);
 
-    /*
-       Negative sign display nahi karna
-    */
-
-    value = Math.abs(value);
+    value =
+        Math.abs(value);
 
     return "₹" +
-        value.toLocaleString("en-IN",{
-            minimumFractionDigits:0,
-            maximumFractionDigits:2
-        });
+        value.toLocaleString(
+            "en-IN",
+            {
+                minimumFractionDigits:0,
+                maximumFractionDigits:2
+            }
+        );
 }
 
 
@@ -540,12 +521,14 @@ function formatDateTime(value){
     }
 
     const day =
-        String(d.getDate())
-        .padStart(2,"0");
+        String(
+            d.getDate()
+        ).padStart(2,"0");
 
     const month =
-        String(d.getMonth()+1)
-        .padStart(2,"0");
+        String(
+            d.getMonth()+1
+        ).padStart(2,"0");
 
     const year =
         d.getFullYear();
@@ -554,12 +537,14 @@ function formatDateTime(value){
         d.getHours();
 
     const minutes =
-        String(d.getMinutes())
-        .padStart(2,"0");
+        String(
+            d.getMinutes()
+        ).padStart(2,"0");
 
     const seconds =
-        String(d.getSeconds())
-        .padStart(2,"0");
+        String(
+            d.getSeconds()
+        ).padStart(2,"0");
 
     const ampm =
         hours >= 12
@@ -581,7 +566,7 @@ function formatDateTime(value){
 
 
 /* =========================================================
-   DATE
+   LOCAL DATE
    ========================================================= */
 
 function localDateString(date){
@@ -672,9 +657,11 @@ async function getAllRows(
             start + pageSize - 1
         );
 
+
         if(error){
             throw error;
         }
+
 
         if(data && data.length){
 
@@ -683,17 +670,18 @@ async function getAllRows(
 
         }
 
+
         if(
             !data ||
             data.length < pageSize
         ){
-
             break;
-
         }
+
 
         start +=
             pageSize;
+
     }
 
     return allRows;
@@ -711,9 +699,12 @@ async function loadUsers(){
         hideError();
 
         userSelect.innerHTML =
-            `<option value="">
+        `
+            <option value="">
                 Loading Users...
-            </option>`;
+            </option>
+        `;
+
 
         const {
             data,
@@ -731,23 +722,31 @@ async function loadUsers(){
             }
         );
 
+
         if(error){
             throw error;
         }
 
 
         userSelect.innerHTML =
-            `<option value="">
+        `
+            <option value="">
                 Select User ID
-            </option>`;
+            </option>
+        `;
 
 
-        if(!data || data.length === 0){
+        if(
+            !data ||
+            data.length === 0
+        ){
 
             userSelect.innerHTML =
-                `<option value="">
+            `
+                <option value="">
                     No Users Found
-                </option>`;
+                </option>
+            `;
 
             return;
         }
@@ -760,11 +759,14 @@ async function loadUsers(){
                     "option"
                 );
 
+
             option.value =
                 user.id;
 
+
             option.textContent =
                 `${user.id} - ${user.name || ""} - ${user.mobile || ""}`;
+
 
             userSelect.appendChild(
                 option
@@ -779,9 +781,12 @@ async function loadUsers(){
         console.error(error);
 
         userSelect.innerHTML =
-            `<option value="">
+        `
+            <option value="">
                 Users Load Failed
-            </option>`;
+            </option>
+        `;
+
 
         showError(
             "Users load nahi ho rahe: " +
@@ -814,9 +819,11 @@ async function getUser(userId){
     )
     .maybeSingle();
 
+
     if(error){
         throw error;
     }
+
 
     return data;
 }
@@ -824,7 +831,6 @@ async function getUser(userId){
 
 /* =========================================================
    DATE RANGE
-   05:00 AM TO NEXT DAY 05:00 AM
    ========================================================= */
 
 function getDateRange(){
@@ -835,7 +841,11 @@ function getDateRange(){
     const to =
         toDate.value;
 
-    if(!from || !to){
+
+    if(
+        !from ||
+        !to
+    ){
         return null;
     }
 
@@ -874,14 +884,10 @@ function isAccepted(status){
     const s =
         String(
             status || ""
-        ).toLowerCase()
+        )
+        .toLowerCase()
         .trim();
 
-
-    /*
-       Agar status blank hai
-       to bhi purana record allow.
-    */
 
     if(!s){
         return true;
@@ -889,6 +895,7 @@ function isAccepted(status){
 
 
     return [
+
         "accepted",
         "accept",
         "approved",
@@ -899,6 +906,7 @@ function isAccepted(status){
         "complete",
         "clear",
         "cleared"
+
     ].includes(s);
 
 }
@@ -923,13 +931,17 @@ async function loadStatement(){
             "none";
 
 
-        statementBody.innerHTML = `
+        statementBody.innerHTML =
+        `
             <tr>
+
                 <td
                     colspan="5"
-                    class="empty">
+                    class="empty"
+                >
                     Select User ID
                 </td>
+
             </tr>
         `;
 
@@ -961,7 +973,10 @@ async function loadStatement(){
     }
 
 
-    if(range.start > range.end){
+    if(
+        range.start >
+        range.end
+    ){
 
         showError(
             "From Date galat hai."
@@ -982,9 +997,9 @@ async function loadStatement(){
     try{
 
 
-        /* =============================================
+        /* =================================================
            USER
-        ============================================= */
+        ================================================= */
 
         const user =
             await getUser(userId);
@@ -993,15 +1008,15 @@ async function loadStatement(){
         if(!user){
 
             throw new Error(
-                "User nahi mila."
+                "User login table mein nahi mila."
             );
 
         }
 
 
-        /* =============================================
+        /* =================================================
            USER INFO
-        ============================================= */
+        ================================================= */
 
         userInfo.style.display =
             "grid";
@@ -1010,17 +1025,14 @@ async function loadStatement(){
         infoId.textContent =
             user.id || "-";
 
+
         infoName.textContent =
             user.name || "-";
+
 
         infoMobile.textContent =
             user.mobile || "-";
 
-
-        /*
-           PRESENT BALANCE HAMESHA
-           LOGIN.BALANCE SE AAYEGA.
-        */
 
         const currentBalance =
             Number(
@@ -1036,9 +1048,14 @@ async function loadStatement(){
             money(currentBalance);
 
 
-        /* =============================================
-           GET TABLE DATA
-        ============================================= */
+        /* =================================================
+           FETCH ALL TABLES
+
+           IMPORTANT:
+           history mein sirf REAL columns use kiye hain.
+
+           history.amount HATA DIYA HAI.
+        ================================================= */
 
         const [
 
@@ -1054,14 +1071,19 @@ async function loadStatement(){
 
             adminHistoryRows
 
-        ] = await Promise.all([
+        ] =
+        await Promise.all([
 
+
+            /* HISTORY */
 
             getAllRows(
                 "history",
-                "id,user_id,market,total,amount,bet_amount,created_at,status,game_date"
+                "id,user_id,market,total,created_at,status,game_date"
             ),
 
+
+            /* WINING */
 
             getAllRows(
                 "wining",
@@ -1069,11 +1091,15 @@ async function loadStatement(){
             ),
 
 
+            /* WITHDRAW */
+
             getAllRows(
                 "withdraw_requests",
                 "id,user_id,amount,status,created_at"
             ),
 
+
+            /* DEPOSITS */
 
             getAllRows(
                 "deposits",
@@ -1081,11 +1107,15 @@ async function loadStatement(){
             ),
 
 
+            /* DEPOSIT REQUESTS */
+
             getAllRows(
                 "deposit_requests",
                 "id,user_id,amount,utr,status,created_at"
             ),
 
+
+            /* ADMIN HISTORY */
 
             getAllRows(
                 "admin_history",
@@ -1095,16 +1125,16 @@ async function loadStatement(){
         ]);
 
 
-        /* =============================================
-           TRANSACTIONS
-        ============================================= */
+        /* =================================================
+           TRANSACTIONS ARRAY
+        ================================================= */
 
         let transactions = [];
 
 
-        /* =============================================
+        /* =================================================
            HISTORY = DEBIT
-        ============================================= */
+        ================================================= */
 
         historyRows.forEach(row => {
 
@@ -1137,18 +1167,21 @@ async function loadStatement(){
 
 
             if(
-                !isAccepted(row.status)
+                !isAccepted(
+                    row.status
+                )
             ){
                 return;
             }
 
 
+            /*
+               HISTORY KA AMOUNT = total
+            */
+
             const amount =
                 Number(
-                    row.total ??
-                    row.amount ??
-                    row.bet_amount ??
-                    0
+                    row.total || 0
                 );
 
 
@@ -1179,9 +1212,9 @@ async function loadStatement(){
         });
 
 
-        /* =============================================
+        /* =================================================
            WINING = CREDIT
-        ============================================= */
+        ================================================= */
 
         winingRows.forEach(row => {
 
@@ -1214,7 +1247,9 @@ async function loadStatement(){
 
 
             if(
-                !isAccepted(row.status)
+                !isAccepted(
+                    row.status
+                )
             ){
                 return;
             }
@@ -1253,9 +1288,9 @@ async function loadStatement(){
         });
 
 
-        /* =============================================
+        /* =================================================
            WITHDRAW = DEBIT
-        ============================================= */
+        ================================================= */
 
         withdrawRows.forEach(row => {
 
@@ -1288,7 +1323,9 @@ async function loadStatement(){
 
 
             if(
-                !isAccepted(row.status)
+                !isAccepted(
+                    row.status
+                )
             ){
                 return;
             }
@@ -1327,9 +1364,9 @@ async function loadStatement(){
         });
 
 
-        /* =============================================
+        /* =================================================
            DEPOSITS = CREDIT
-        ============================================= */
+        ================================================= */
 
         depositsRows.forEach(row => {
 
@@ -1362,7 +1399,9 @@ async function loadStatement(){
 
 
             if(
-                !isAccepted(row.status)
+                !isAccepted(
+                    row.status
+                )
             ){
                 return;
             }
@@ -1401,9 +1440,9 @@ async function loadStatement(){
         });
 
 
-        /* =============================================
+        /* =================================================
            DEPOSIT REQUESTS = CREDIT
-        ============================================= */
+        ================================================= */
 
         depositRequestRows.forEach(row => {
 
@@ -1436,7 +1475,9 @@ async function loadStatement(){
 
 
             if(
-                !isAccepted(row.status)
+                !isAccepted(
+                    row.status
+                )
             ){
                 return;
             }
@@ -1475,9 +1516,9 @@ async function loadStatement(){
         });
 
 
-        /* =============================================
+        /* =================================================
            ADMIN HISTORY
-        ============================================= */
+        ================================================= */
 
         adminHistoryRows.forEach(row => {
 
@@ -1510,7 +1551,9 @@ async function loadStatement(){
 
 
             if(
-                !isAccepted(row.status)
+                !isAccepted(
+                    row.status
+                )
             ){
                 return;
             }
@@ -1519,7 +1562,8 @@ async function loadStatement(){
             const type =
                 String(
                     row.action_type || ""
-                ).toLowerCase();
+                )
+                .toLowerCase();
 
 
             const amount =
@@ -1534,7 +1578,6 @@ async function loadStatement(){
 
 
             let debit = 0;
-
             let credit = 0;
 
 
@@ -1590,9 +1633,9 @@ async function loadStatement(){
         });
 
 
-        /* =============================================
+        /* =================================================
            SORT OLD TO NEW
-        ============================================= */
+        ================================================= */
 
         transactions.sort(
             (a,b) => {
@@ -1601,6 +1644,7 @@ async function loadStatement(){
                     new Date(
                         a.created_at
                     ).getTime();
+
 
                 const bTime =
                     new Date(
@@ -1630,9 +1674,9 @@ async function loadStatement(){
         );
 
 
-        /* =============================================
+        /* =================================================
            TOTALS
-        ============================================= */
+        ================================================= */
 
         let debitTotal = 0;
 
@@ -1645,6 +1689,7 @@ async function loadStatement(){
                 Number(
                     row.debit || 0
                 );
+
 
             creditTotal +=
                 Number(
@@ -1662,64 +1707,53 @@ async function loadStatement(){
             money(creditTotal);
 
 
-        /* =============================================
-           NO DATA
-        ============================================= */
+        /* =================================================
+           NO TRANSACTION
+        ================================================= */
 
         if(
             transactions.length === 0
         ){
 
-            statementBody.innerHTML = `
+            statementBody.innerHTML =
+            `
                 <tr>
+
                     <td
                         colspan="5"
-                        class="empty">
+                        class="empty"
+                    >
                         Is date range mein
                         koi transaction nahi hai.
                     </td>
+
                 </tr>
             `;
 
             return;
-
         }
 
 
         /* =================================================
-           IMPORTANT LOGIC
+           PRESENT BALANCE LOGIC
 
-           CURRENT LOGIN.BALANCE = PRESENT BALANCE
+           login.balance = PRESENT BALANCE
 
-           Isko starting balance nahi banana.
+           Isliye reverse calculation:
 
-           Pehle last transaction se reverse calculation
-           karke har row ka balance nikala jayega.
+           BEFORE =
+           AFTER + DEBIT - CREDIT
         ================================================= */
-
-
-        /*
-           Current balance se start
-        */
 
         let balanceAfter =
             currentBalance;
 
-
-        /*
-           Har transaction ke baad ka balance
-           yahan store hoga.
-        */
 
         const balances =
             new Array(
                 transactions.length
             );
 
-
-        /*
-           NEW -> OLD reverse calculation
-        */
 
         for(
             let i =
@@ -1735,8 +1769,7 @@ async function loadStatement(){
 
 
             /*
-               Jo balance is transaction ke BAAD tha
-               wo balanceAfter hai.
+               Is transaction ke BAAD ka balance
             */
 
             balances[i] =
@@ -1748,6 +1781,7 @@ async function loadStatement(){
                     row.debit || 0
                 );
 
+
             const credit =
                 Number(
                     row.credit || 0
@@ -1755,11 +1789,7 @@ async function loadStatement(){
 
 
             /*
-               Balance BEFORE transaction:
-
-               Current/after balance
-               + debit
-               - credit
+               Transaction se PEHLE ka balance
             */
 
             balanceAfter =
@@ -1770,9 +1800,9 @@ async function loadStatement(){
         }
 
 
-        /* =============================================
-           CREATE TABLE
-        ============================================= */
+        /* =================================================
+           TABLE
+        ================================================= */
 
         let html = "";
 
@@ -1792,7 +1822,7 @@ async function loadStatement(){
                     );
 
 
-                const rowBalance =
+                const balance =
                     balances[index];
 
 
@@ -1831,7 +1861,7 @@ async function loadStatement(){
 
 
                         <td class="balance">
-                            ${money(rowBalance)}
+                            ${money(balance)}
                         </td>
 
                     </tr>
@@ -1852,13 +1882,17 @@ async function loadStatement(){
         console.error(error);
 
 
-        statementBody.innerHTML = `
+        statementBody.innerHTML =
+        `
             <tr>
+
                 <td
                     colspan="5"
-                    class="empty">
+                    class="empty"
+                >
                     Data load nahi hua.
                 </td>
+
             </tr>
         `;
 
