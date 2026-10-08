@@ -122,7 +122,7 @@ select{
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:800px;
+    min-width:850px;
 }
 
 th{
@@ -242,7 +242,6 @@ tfoot td{
         gap:10px;
         flex-direction:column;
     }
-
 }
 
 </style>
@@ -255,19 +254,22 @@ tfoot td{
 
     <h1>USER BANK STATEMENT</h1>
 
-    <!-- TWO DROPDOWNS -->
+    <!-- USER + DATE -->
 
     <div class="filters">
 
         <div class="filter-box">
             <label>User ID</label>
+
             <select id="userSelect">
                 <option value="">Select User ID</option>
             </select>
         </div>
 
+
         <div class="filter-box">
             <label>Statement Date</label>
+
             <select id="dateSelect">
                 <option value="">Select Date</option>
             </select>
@@ -278,25 +280,55 @@ tfoot td{
 
     <!-- USER DETAILS -->
 
-    <div id="userDetails" class="user-details" style="display:none;">
+    <div
+        id="userDetails"
+        class="user-details"
+        style="display:none;"
+    >
 
         <h2>User Details</h2>
 
         <div class="details-grid">
 
             <div class="detail">
-                <div class="detail-title">User ID</div>
-                <div id="detailId" class="detail-value">-</div>
+                <div class="detail-title">
+                    User ID
+                </div>
+
+                <div
+                    id="detailId"
+                    class="detail-value"
+                >
+                    -
+                </div>
             </div>
 
-            <div class="detail">
-                <div class="detail-title">Name</div>
-                <div id="detailName" class="detail-value">-</div>
-            </div>
 
             <div class="detail">
-                <div class="detail-title">Mobile</div>
-                <div id="detailMobile" class="detail-value">-</div>
+                <div class="detail-title">
+                    Name
+                </div>
+
+                <div
+                    id="detailName"
+                    class="detail-value"
+                >
+                    -
+                </div>
+            </div>
+
+
+            <div class="detail">
+                <div class="detail-title">
+                    Mobile
+                </div>
+
+                <div
+                    id="detailMobile"
+                    class="detail-value"
+                >
+                    -
+                </div>
             </div>
 
         </div>
@@ -306,13 +338,20 @@ tfoot td{
 
     <!-- OPENING BALANCE -->
 
-    <div id="openingBox" class="opening-box" style="display:none;">
+    <div
+        id="openingBox"
+        class="opening-box"
+        style="display:none;"
+    >
 
         <div class="opening-title">
             Opening Balance
         </div>
 
-        <div id="openingBalance" class="opening-value">
+        <div
+            id="openingBalance"
+            class="opening-value"
+        >
             ₹0.00
         </div>
 
@@ -334,6 +373,10 @@ tfoot td{
 
 <script>
 
+/* =========================================
+   SUPABASE
+========================================= */
+
 const SUPABASE_URL =
 "https://katbdbzoufiblnnsoxkk.supabase.co";
 
@@ -346,6 +389,10 @@ supabase.createClient(
     SUPABASE_KEY
 );
 
+
+/* =========================================
+   ELEMENTS
+========================================= */
 
 const userSelect =
 document.getElementById("userSelect");
@@ -365,32 +412,29 @@ document.getElementById("statementArea");
 
 let users = [];
 
-let currentTransactions = [];
-
 let selectedUser = null;
 
 
-/* =========================
+/* =========================================
    MONEY
-========================= */
+========================================= */
 
 function money(value){
 
-    value = Number(value || 0);
-
-    return value.toLocaleString(
+    return Number(value || 0).toLocaleString(
         "en-IN",
         {
             minimumFractionDigits:2,
             maximumFractionDigits:2
         }
     );
+
 }
 
 
-/* =========================
-   DATE HELPERS
-========================= */
+/* =========================================
+   PAD
+========================================= */
 
 function pad(n){
 
@@ -399,48 +443,61 @@ function pad(n){
 }
 
 
+/* =========================================
+   DATE ONLY
+========================================= */
+
 function formatDateOnly(date){
 
-    const y = date.getFullYear();
-
-    const m = pad(date.getMonth()+1);
-
-    const d = pad(date.getDate());
-
-    return `${y}-${m}-${d}`;
+    return (
+        date.getFullYear() +
+        "-" +
+        pad(date.getMonth()+1) +
+        "-" +
+        pad(date.getDate())
+    );
 
 }
 
+
+/* =========================================
+   DISPLAY DATE
+========================================= */
 
 function displayDate(date){
 
-    const d = new Date(date);
-
-    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+    return (
+        pad(date.getDate()) +
+        "/" +
+        pad(date.getMonth()+1) +
+        "/" +
+        date.getFullYear()
+    );
 
 }
 
 
-/*
-   Statement day:
+/* =========================================
+   STATEMENT RANGE
 
-   05:00 AM
-   ->
-   next day 04:59:59 AM
-*/
-
+   5:00 AM
+   TO
+   NEXT DAY 4:59:59 AM
+========================================= */
 
 function statementRange(dateString){
 
     const start =
         new Date(
-            `${dateString}T05:00:00`
+            dateString + "T05:00:00"
         );
 
     const end =
-        new Date(start.getTime());
+        new Date(start);
 
-    end.setDate(end.getDate()+1);
+    end.setDate(
+        end.getDate() + 1
+    );
 
     return {
         start,
@@ -450,26 +507,32 @@ function statementRange(dateString){
 }
 
 
-/* =========================
+/* =========================================
    LOCAL TIMESTAMP
-   For timestamp without timezone
-========================= */
+========================================= */
 
 function localDateTimeString(date){
 
-    return `${date.getFullYear()}-` +
-           `${pad(date.getMonth()+1)}-` +
-           `${pad(date.getDate())} ` +
-           `${pad(date.getHours())}:` +
-           `${pad(date.getMinutes())}:` +
-           `${pad(date.getSeconds())}`;
+    return (
+        date.getFullYear() +
+        "-" +
+        pad(date.getMonth()+1) +
+        "-" +
+        pad(date.getDate()) +
+        " " +
+        pad(date.getHours()) +
+        ":" +
+        pad(date.getMinutes()) +
+        ":" +
+        pad(date.getSeconds())
+    );
 
 }
 
 
-/* =========================
+/* =========================================
    GET ALL ROWS
-========================= */
+========================================= */
 
 async function getAllRows(
     table,
@@ -479,14 +542,15 @@ async function getAllRows(
 ){
 
     let all = [];
+
     let from = 0;
 
     while(true){
 
         let query =
             supabaseClient
-                .from(table)
-                .select(select);
+            .from(table)
+            .select(select);
 
         query =
             filterFunction(query);
@@ -494,15 +558,16 @@ async function getAllRows(
         const {
             data,
             error
-        } = await query
-            .range(
-                from,
-                from + pageSize - 1
-            );
+        } =
+        await query.range(
+            from,
+            from + pageSize - 1
+        );
 
         if(error){
 
-            console.log(
+            console.error(
+                "Table:",
                 table,
                 error
             );
@@ -513,15 +578,19 @@ async function getAllRows(
         if(data && data.length){
 
             all.push(...data);
+
         }
 
-        if(!data ||
-           data.length < pageSize){
+        if(
+            !data ||
+            data.length < pageSize
+        ){
 
             break;
         }
 
         from += pageSize;
+
     }
 
     return all;
@@ -529,9 +598,9 @@ async function getAllRows(
 }
 
 
-/* =========================
+/* =========================================
    LOAD USERS
-========================= */
+========================================= */
 
 async function loadUsers(){
 
@@ -540,14 +609,17 @@ async function loadUsers(){
         error
     } =
     await supabaseClient
-        .from("login")
-        .select(
-            "id,name,mobile,balance"
-        )
-        .order(
-            "id",
-            {ascending:true}
-        );
+    .from("login")
+    .select(
+        "id,name,mobile,balance"
+    )
+    .order(
+        "id",
+        {
+            ascending:true
+        }
+    );
+
 
     if(error){
 
@@ -560,33 +632,39 @@ async function loadUsers(){
         return;
     }
 
+
     users = data || [];
+
 
     userSelect.innerHTML =
         `<option value="">
             Select User ID
         </option>`;
 
+
     users.forEach(user => {
 
         const option =
             document.createElement("option");
 
-        option.value = user.id;
+        option.value =
+            user.id;
 
         option.textContent =
             `${user.id} - ${user.name || ""} - ${user.mobile || ""}`;
 
-        userSelect.appendChild(option);
+        userSelect.appendChild(
+            option
+        );
 
     });
 
 }
 
 
-/* =========================
+/* =========================================
    LOAD DATES
-========================= */
+========================================= */
 
 function loadDates(){
 
@@ -595,32 +673,36 @@ function loadDates(){
             Select Date
         </option>`;
 
+
     const today =
         new Date();
 
-    /*
-       30 days
-    */
 
-    for(let i=0;i<30;i++){
+    for(
+        let i = 0;
+        i < 30;
+        i++
+    ){
 
         const d =
             new Date(today);
 
         d.setDate(
-            today.getDate()-i
+            today.getDate() - i
         );
 
-        const value =
-            formatDateOnly(d);
 
         const option =
             document.createElement("option");
 
-        option.value = value;
+
+        option.value =
+            formatDateOnly(d);
+
 
         option.textContent =
             displayDate(d);
+
 
         dateSelect.appendChild(
             option
@@ -631,9 +713,9 @@ function loadDates(){
 }
 
 
-/* =========================
+/* =========================================
    USER CHANGE
-========================= */
+========================================= */
 
 userSelect.addEventListener(
     "change",
@@ -642,12 +724,14 @@ userSelect.addEventListener(
         const id =
             this.value;
 
+
         selectedUser =
             users.find(
-                u =>
-                String(u.id) ===
-                String(id)
+                user =>
+                    String(user.id) ===
+                    String(id)
             );
+
 
         if(!selectedUser){
 
@@ -665,36 +749,42 @@ userSelect.addEventListener(
             return;
         }
 
+
         document.getElementById(
             "detailId"
         ).textContent =
             selectedUser.id;
+
 
         document.getElementById(
             "detailName"
         ).textContent =
             selectedUser.name || "-";
 
+
         document.getElementById(
             "detailMobile"
         ).textContent =
             selectedUser.mobile || "-";
 
+
         userDetails.style.display =
             "block";
+
 
         if(dateSelect.value){
 
             await loadStatement();
+
         }
 
     }
 );
 
 
-/* =========================
+/* =========================================
    DATE CHANGE
-========================= */
+========================================= */
 
 dateSelect.addEventListener(
     "change",
@@ -706,15 +796,16 @@ dateSelect.addEventListener(
         ){
 
             await loadStatement();
+
         }
 
     }
 );
 
 
-/* =========================
+/* =========================================
    LOAD STATEMENT
-========================= */
+========================================= */
 
 async function loadStatement(){
 
@@ -726,44 +817,46 @@ async function loadStatement(){
         return;
     }
 
+
     statementArea.innerHTML =
         `<div class="loading">
             Loading statement...
         </div>`;
 
+
     const userId =
         userSelect.value;
 
+
     const selectedDate =
         dateSelect.value;
+
 
     const range =
         statementRange(
             selectedDate
         );
 
+
     const start =
         range.start;
+
 
     const end =
         range.end;
 
-    /*
-       For timestamptz tables
-    */
 
     const startISO =
         start.toISOString();
 
+
     const endISO =
         end.toISOString();
 
-    /*
-       For timestamp without timezone
-    */
 
     const startLocal =
         localDateTimeString(start);
+
 
     const endLocal =
         localDateTimeString(end);
@@ -773,7 +866,7 @@ async function loadStatement(){
 
 
     /* =====================================
-       1. HISTORY - GAME + HISTORY WINNING
+       1. HISTORY = GAME / BET
     ===================================== */
 
     const historyRows =
@@ -783,16 +876,9 @@ async function loadStatement(){
             id,
             user_id,
             market,
-            data,
             total,
             created_at,
             status,
-            win_amount,
-            typing,
-            commission,
-            mode,
-            action_type,
-            action_amount,
             game_date
             `,
             query =>
@@ -807,13 +893,13 @@ async function loadStatement(){
                 )
                 .lt(
                     "game_date",
-                    formatDateOnly(
-                        end
-                    )
+                    formatDateOnly(end)
                 )
                 .order(
                     "created_at",
-                    {ascending:true}
+                    {
+                        ascending:true
+                    }
                 )
         );
 
@@ -821,79 +907,46 @@ async function loadStatement(){
     historyRows.forEach(row => {
 
         const amount =
-            Number(row.total || 0);
-
-        if(amount > 0){
-
-            transactions.push({
-
-                time:
-                    new Date(
-                        row.created_at
-                    ),
-
-                particulars:
-                    `${row.market || "Game"} - Game / Bet`,
-
-                debit:
-                    amount,
-
-                credit:
-                    0,
-
-                source:
-                    "history-game",
-
-                sourceId:
-                    row.id
-
-            });
-
-        }
-
-
-        /*
-           If history itself has winning
-        */
-
-        const win =
             Number(
-                row.win_amount || 0
+                row.total || 0
             );
 
-        if(win > 0){
 
-            transactions.push({
+        if(amount <= 0){
 
-                time:
-                    new Date(
-                        row.created_at
-                    ),
-
-                particulars:
-                    `${row.market || "Game"} - Winning`,
-
-                debit:
-                    0,
-
-                credit:
-                    win,
-
-                source:
-                    "history-winning",
-
-                sourceId:
-                    row.id
-
-            });
-
+            return;
         }
+
+
+        transactions.push({
+
+            time:
+                new Date(
+                    row.created_at
+                ),
+
+            particulars:
+                `${row.market || "Game"} - Game / Bet`,
+
+            debit:
+                amount,
+
+            credit:
+                0,
+
+            source:
+                "history",
+
+            sourceId:
+                row.id
+
+        });
 
     });
 
 
     /* =====================================
-       2. DEPOSITS TABLE
+       2. DEPOSITS
     ===================================== */
 
     const depositRows =
@@ -923,7 +976,9 @@ async function loadStatement(){
                 )
                 .order(
                     "created_at",
-                    {ascending:true}
+                    {
+                        ascending:true
+                    }
                 )
         );
 
@@ -935,34 +990,44 @@ async function loadStatement(){
                 row.status || ""
             ).toLowerCase();
 
-        const allowed =
-            [
-                "accepted",
-                "accept",
-                "approved",
-                "approve",
-                "success",
-                "successful",
-                "completed",
-                "complete",
-                "clear",
-                "cleared"
-            ].includes(status);
 
-        if(!allowed){
+        const allowedStatuses = [
+
+            "accepted",
+            "accept",
+            "approved",
+            "approve",
+            "success",
+            "successful",
+            "completed",
+            "complete",
+            "clear",
+            "cleared"
+
+        ];
+
+
+        if(
+            !allowedStatuses.includes(
+                status
+            )
+        ){
 
             return;
         }
+
 
         const amount =
             Number(
                 row.amount || 0
             );
 
+
         if(amount <= 0){
 
             return;
         }
+
 
         transactions.push({
 
@@ -996,7 +1061,7 @@ async function loadStatement(){
 
     /* =====================================
        3. DEPOSIT REQUESTS
-       If actual deposit table has no entry
+       Only add if not duplicate
     ===================================== */
 
     const depositRequestRows =
@@ -1026,7 +1091,9 @@ async function loadStatement(){
                 )
                 .order(
                     "created_at",
-                    {ascending:true}
+                    {
+                        ascending:true
+                    }
                 )
         );
 
@@ -1038,69 +1105,94 @@ async function loadStatement(){
                 row.status || ""
             ).toLowerCase();
 
-        const allowed =
-            [
-                "accepted",
-                "accept",
-                "approved",
-                "approve",
-                "success",
-                "successful",
-                "completed",
-                "complete",
-                "clear",
-                "cleared"
-            ].includes(status);
 
-        if(!allowed){
+        const allowedStatuses = [
+
+            "accepted",
+            "accept",
+            "approved",
+            "approve",
+            "success",
+            "successful",
+            "completed",
+            "complete",
+            "clear",
+            "cleared"
+
+        ];
+
+
+        if(
+            !allowedStatuses.includes(
+                status
+            )
+        ){
 
             return;
         }
+
 
         const amount =
             Number(
                 row.amount || 0
             );
 
+
         if(amount <= 0){
 
             return;
         }
 
-        /*
-           Don't duplicate if same UTR
-           already exists in deposits.
-        */
+
+        const rowTime =
+            new Date(
+                row.created_at
+            ).getTime();
+
 
         const duplicate =
-            transactions.some(t =>
+            transactions.some(t => {
 
-                t.source === "deposit" &&
-                (
-                    (
-                        row.utr &&
-                        t.utr &&
-                        String(row.utr) ===
-                        String(t.utr)
-                    )
-                    ||
-                    (
-                        Number(t.credit) === amount &&
-                        Math.abs(
-                            t.time.getTime() -
-                            new Date(
-                                row.created_at
-                            ).getTime()
-                        ) < 5 * 60 * 1000
-                    )
-                )
+                if(
+                    t.source !== "deposit"
+                ){
 
-            );
+                    return false;
+                }
+
+
+                const timeDiff =
+                    Math.abs(
+                        t.time.getTime() -
+                        rowTime
+                    );
+
+
+                if(
+                    row.utr &&
+                    t.utr &&
+                    String(row.utr) ===
+                    String(t.utr)
+                ){
+
+                    return true;
+                }
+
+
+                return (
+                    Number(t.credit) === amount &&
+                    timeDiff <=
+                    5 * 60 * 1000
+                );
+
+            });
+
 
         if(duplicate){
 
             return;
         }
+
 
         transactions.push({
 
@@ -1122,113 +1214,71 @@ async function loadStatement(){
                 "deposit-request",
 
             sourceId:
-                row.id,
-
-            utr:
-                row.utr || ""
+                row.id
 
         });
 
     });
 
 
- /* =====================================
-   4. ADMIN WINING
-   ===================================== */
+    /* =====================================
+       4. ADMIN WINING
+       THIS IS THE WINNING SOURCE
+    ===================================== */
 
-const winningRows =
-    await getAllRows(
-        "admin wining",
-        `
-        id,
-        user_id,
-        amount,
-        market,
-        created_at
-        `,
-        query =>
-            query
-            .eq(
-                "user_id",
-                String(userId)
-            )
-            .gte(
-                "created_at",
-                startLocal
-            )
-            .lt(
-                "created_at",
-                endLocal
-            )
-            .order(
-                "created_at",
-                {ascending:true}
-            )
-    );
-
-
-winningRows.forEach(row => {
-
-    const amount =
-        Number(
-            row.amount || 0
-        );
-
-    if(amount <= 0){
-
-        return;
-    }
-
-    /*
-       Avoid duplicate with history win
-    */
-
-    const duplicate =
-        transactions.some(t =>
-
-            t.source === "history-winning" &&
-
-            Number(t.credit) === amount &&
-
-            Math.abs(
-                t.time.getTime() -
-                new Date(
-                    row.created_at
-                ).getTime()
-            ) < 5 * 60 * 1000
-
-        );
-
-    if(duplicate){
-
-        return;
-    }
-
-    transactions.push({
-
-        time:
-            new Date(
-                row.created_at
-            ),
-
-        particulars:
-            `${row.market || "Game"} - Winning`,
-
-        debit:
-            0,
-
-        credit:
+    const winningRows =
+        await getAllRows(
+            "admin wining",
+            `
+            id,
+            user_id,
             amount,
+            created_at,
+            market
+            `,
+            query =>
+                query
+                .eq(
+                    "user_id",
+                    String(userId)
+                )
+                .gte(
+                    "created_at",
+                    startLocal
+                )
+                .lt(
+                    "created_at",
+                    endLocal
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:true
+                    }
+                )
+        );
 
-        source:
-            "admin-winning",
 
-        sourceId:
-            row.id
+    winningRows.forEach(row => {
 
-    });
+        const amount =
+            Number(
+                row.amount || 0
+            );
 
-});
+
+        if(amount <= 0){
+
+            return;
+        }
+
+
+        /*
+           IMPORTANT:
+           Winning = CREDIT
+           Credit balance me add hota hai.
+        */
+
         transactions.push({
 
             time:
@@ -1258,8 +1308,6 @@ winningRows.forEach(row => {
 
     /* =====================================
        5. WITHDRAW REQUESTS
-       Table exists ho to use hoga.
-       Agar table nahi hai to page nahi tutega.
     ===================================== */
 
     try{
@@ -1290,7 +1338,9 @@ winningRows.forEach(row => {
                     )
                     .order(
                         "created_at",
-                        {ascending:true}
+                        {
+                            ascending:true
+                        }
                     )
             );
 
@@ -1302,34 +1352,44 @@ winningRows.forEach(row => {
                     row.status || ""
                 ).toLowerCase();
 
-            const allowed =
-                [
-                    "accepted",
-                    "accept",
-                    "approved",
-                    "approve",
-                    "success",
-                    "successful",
-                    "completed",
-                    "complete",
-                    "clear",
-                    "cleared"
-                ].includes(status);
 
-            if(!allowed){
+            const allowedStatuses = [
+
+                "accepted",
+                "accept",
+                "approved",
+                "approve",
+                "success",
+                "successful",
+                "completed",
+                "complete",
+                "clear",
+                "cleared"
+
+            ];
+
+
+            if(
+                !allowedStatuses.includes(
+                    status
+                )
+            ){
 
                 return;
             }
+
 
             const amount =
                 Number(
                     row.amount || 0
                 );
 
+
             if(amount <= 0){
 
                 return;
             }
+
 
             transactions.push({
 
@@ -1357,7 +1417,8 @@ winningRows.forEach(row => {
 
         });
 
-    }catch(e){
+    }
+    catch(error){
 
         console.log(
             "withdraw_requests table not available"
@@ -1368,8 +1429,7 @@ winningRows.forEach(row => {
 
     /* =====================================
        6. ADMIN HISTORY
-       old_balance -> new_balance
-       se actual debit/credit niklega
+       Manual wallet transactions
     ===================================== */
 
     const adminHistoryRows =
@@ -1378,7 +1438,6 @@ winningRows.forEach(row => {
             `
             id,
             user_id,
-            admin_user_id,
             action_type,
             action_amount,
             old_balance,
@@ -1402,7 +1461,9 @@ winningRows.forEach(row => {
                 )
                 .order(
                     "created_at",
-                    {ascending:true}
+                    {
+                        ascending:true
+                    }
                 )
         );
 
@@ -1413,6 +1474,7 @@ winningRows.forEach(row => {
             String(
                 row.status || ""
             ).toLowerCase();
+
 
         if(
             [
@@ -1428,10 +1490,15 @@ winningRows.forEach(row => {
         }
 
 
+        let debit = 0;
+        let credit = 0;
+
+
         const oldBalance =
             Number(
                 row.old_balance
             );
+
 
         const newBalance =
             Number(
@@ -1439,13 +1506,9 @@ winningRows.forEach(row => {
             );
 
 
-        let debit = 0;
-        let credit = 0;
-
-
         /*
-           Best method:
-           new balance - old balance
+           old_balance -> new_balance
+           se exact movement
         */
 
         if(
@@ -1457,12 +1520,14 @@ winningRows.forEach(row => {
                 newBalance -
                 oldBalance;
 
+
             if(difference < 0){
 
                 debit =
                     Math.abs(difference);
 
             }
+
 
             if(difference > 0){
 
@@ -1475,7 +1540,7 @@ winningRows.forEach(row => {
 
 
         /*
-           Fallback
+           Agar balance available nahi hai
         */
 
         if(
@@ -1487,6 +1552,7 @@ winningRows.forEach(row => {
                 Number(
                     row.action_amount || 0
                 );
+
 
             const type =
                 String(
@@ -1505,7 +1571,8 @@ winningRows.forEach(row => {
 
                     debit = amount;
 
-                }else{
+                }
+                else{
 
                     credit = amount;
 
@@ -1526,24 +1593,30 @@ winningRows.forEach(row => {
 
 
         /*
-           Duplicate check with withdraw/deposit
+           Deposit/Withdraw tables ke saath
+           duplicate check
         */
 
         const duplicate =
             transactions.some(t => {
 
-                if(
+                const diff =
                     Math.abs(
                         t.time.getTime() -
                         new Date(
                             row.created_at
                         ).getTime()
-                    ) >
+                    );
+
+
+                if(
+                    diff >
                     5 * 60 * 1000
                 ){
 
                     return false;
                 }
+
 
                 if(
                     debit > 0 &&
@@ -1553,6 +1626,7 @@ winningRows.forEach(row => {
                     return true;
                 }
 
+
                 if(
                     credit > 0 &&
                     Number(t.credit) === credit
@@ -1560,6 +1634,7 @@ winningRows.forEach(row => {
 
                     return true;
                 }
+
 
                 return false;
 
@@ -1577,23 +1652,24 @@ winningRows.forEach(row => {
             "Wallet Transaction";
 
 
-        const typeText =
+        const type =
             String(
                 particulars
             ).toLowerCase();
 
 
         if(
-            typeText.includes("withdraw")
+            type.includes("withdraw")
         ){
 
             particulars =
                 "Withdraw";
 
-        }else if(
-            typeText.includes("deposit") ||
-            typeText.includes("add") ||
-            typeText.includes("credit")
+        }
+        else if(
+            type.includes("deposit") ||
+            type.includes("add") ||
+            type.includes("credit")
         ){
 
             particulars =
@@ -1627,7 +1703,7 @@ winningRows.forEach(row => {
 
 
     /* =====================================
-       SORT ALL TRANSACTIONS
+       SORT BY TIME
     ===================================== */
 
     transactions.sort(
@@ -1638,42 +1714,51 @@ winningRows.forEach(row => {
 
 
     /* =====================================
-       CALCULATE OPENING BALANCE
+       CURRENT WALLET
     ===================================== */
 
-    /*
-       Opening balance is calculated from
-       login.balance minus all transactions
-       after the selected statement date.
-
-       This gives a starting balance for the
-       selected statement day.
-    */
-
-    let currentWallet =
+    const currentWallet =
         Number(
             selectedUser.balance || 0
         );
 
 
-    /*
-       Get transactions after selected
-       statement period and reverse them.
-    */
+    /* =====================================
+       TOTALS
+    ===================================== */
 
-    const futureStart =
-        end;
+    const totalDebit =
+        transactions.reduce(
+            (sum,t) =>
+                sum +
+                Number(t.debit || 0),
+            0
+        );
 
-    const futureStartISO =
-        futureStart.toISOString();
 
+    const totalCredit =
+        transactions.reduce(
+            (sum,t) =>
+                sum +
+                Number(t.credit || 0),
+            0
+        );
+
+
+    /* =====================================
+       OPENING BALANCE
+
+       Current Wallet
+       minus future transactions
+    ===================================== */
 
     let futureDebit = 0;
+
     let futureCredit = 0;
 
 
     /*
-       Future history
+       Future HISTORY
     */
 
     const futureHistory =
@@ -1683,8 +1768,8 @@ winningRows.forEach(row => {
             id,
             user_id,
             total,
-            win_amount,
-            created_at
+            created_at,
+            game_date
             `,
             query =>
                 query
@@ -1693,12 +1778,8 @@ winningRows.forEach(row => {
                     String(userId)
                 )
                 .gte(
-                    "created_at",
-                    futureStartISO
-                )
-                .order(
-                    "created_at",
-                    {ascending:true}
+                    "game_date",
+                    formatDateOnly(end)
                 )
         );
 
@@ -1710,23 +1791,178 @@ winningRows.forEach(row => {
                 row.total || 0
             );
 
+    });
+
+
+    /*
+       Future ADMIN WINING
+    */
+
+    const futureWinning =
+        await getAllRows(
+            "admin wining",
+            `
+            id,
+            user_id,
+            amount,
+            created_at
+            `,
+            query =>
+                query
+                .eq(
+                    "user_id",
+                    String(userId)
+                )
+                .gte(
+                    "created_at",
+                    endLocal
+                )
+        );
+
+
+    futureWinning.forEach(row => {
+
         futureCredit +=
             Number(
-                row.win_amount || 0
+                row.amount || 0
             );
 
     });
 
 
     /*
-       Because different tables may have
-       different timestamp types, we calculate
-       opening using current wallet and the
-       selected statement transactions only
-       when no reliable previous balance exists.
+       Future DEPOSITS
+    */
 
-       For the selected day, use current wallet
-       and reverse all known future history.
+    const futureDeposits =
+        await getAllRows(
+            "deposits",
+            `
+            id,
+            user_id,
+            amount,
+            status,
+            created_at
+            `,
+            query =>
+                query
+                .eq(
+                    "user_id",
+                    Number(userId)
+                )
+                .gte(
+                    "created_at",
+                    endLocal
+                )
+        );
+
+
+    futureDeposits.forEach(row => {
+
+        const status =
+            String(
+                row.status || ""
+            ).toLowerCase();
+
+
+        if(
+            [
+                "accepted",
+                "accept",
+                "approved",
+                "approve",
+                "success",
+                "successful",
+                "completed",
+                "complete",
+                "clear",
+                "cleared"
+            ].includes(status)
+        ){
+
+            futureCredit +=
+                Number(
+                    row.amount || 0
+                );
+
+        }
+
+    });
+
+
+    /*
+       Future Withdraw
+    */
+
+    try{
+
+        const futureWithdraw =
+            await getAllRows(
+                "withdraw_requests",
+                `
+                id,
+                user_id,
+                amount,
+                status,
+                created_at
+                `,
+                query =>
+                    query
+                    .eq(
+                        "user_id",
+                        Number(userId)
+                    )
+                    .gte(
+                        "created_at",
+                        endLocal
+                    )
+            );
+
+
+        futureWithdraw.forEach(row => {
+
+            const status =
+                String(
+                    row.status || ""
+                ).toLowerCase();
+
+
+            if(
+                [
+                    "accepted",
+                    "accept",
+                    "approved",
+                    "approve",
+                    "success",
+                    "successful",
+                    "completed",
+                    "complete",
+                    "clear",
+                    "cleared"
+                ].includes(status)
+            ){
+
+                futureDebit +=
+                    Number(
+                        row.amount || 0
+                    );
+
+            }
+
+        });
+
+    }
+    catch(error){
+
+        console.log(
+            "Future withdraw table not available"
+        );
+
+    }
+
+
+    /*
+       Opening Balance
     */
 
     let openingBalance =
@@ -1735,66 +1971,32 @@ winningRows.forEach(row => {
         futureDebit;
 
 
-    /*
-       Add selected-day movement backwards
-       only if the current wallet is clearly
-       after the selected day.
-    */
-
-    /*
-       Better practical opening:
-       current wallet minus today's net movement
-       if statement represents current wallet.
-    */
-
-    const totalDebit =
-        transactions.reduce(
-            (sum,t) =>
-                sum + Number(t.debit || 0),
-            0
-        );
-
-    const totalCredit =
-        transactions.reduce(
-            (sum,t) =>
-                sum + Number(t.credit || 0),
-            0
-        );
-
-
-    /*
-       If future data was found, opening is based
-       on current wallet before selected day.
-       Otherwise derive opening from current
-       wallet and selected day net movement.
-    */
-
     if(
         !Number.isFinite(openingBalance)
     ){
 
-        openingBalance =
-            currentWallet -
-            totalCredit +
-            totalDebit;
+        openingBalance = 0;
 
     }
 
 
-    /*
-       Do not show negative -0
-    */
-
     if(
-        Math.abs(openingBalance) < 0.00001
+        Math.abs(openingBalance) <
+        0.00001
     ){
 
         openingBalance = 0;
+
     }
 
 
+    /* =====================================
+       SHOW OPENING
+    ===================================== */
+
     openingBox.style.display =
         "flex";
+
 
     document.getElementById(
         "openingBalance"
@@ -1803,10 +2005,12 @@ winningRows.forEach(row => {
 
 
     /* =====================================
-       BUILD STATEMENT
+       NO TRANSACTIONS
     ===================================== */
 
-    if(transactions.length === 0){
+    if(
+        transactions.length === 0
+    ){
 
         statementArea.innerHTML =
             `<div class="empty">
@@ -1816,6 +2020,10 @@ winningRows.forEach(row => {
         return;
     }
 
+
+    /* =====================================
+       RUNNING BALANCE
+    ===================================== */
 
     let runningBalance =
         openingBalance;
@@ -1827,15 +2035,20 @@ winningRows.forEach(row => {
     transactions.forEach(t => {
 
         const debit =
-            Number(t.debit || 0);
+            Number(
+                t.debit || 0
+            );
+
 
         const credit =
-            Number(t.credit || 0);
+            Number(
+                t.credit || 0
+            );
 
 
         /*
-           Debit minus
-           Credit plus
+           Debit = MINUS
+           Credit = PLUS
         */
 
         runningBalance =
@@ -1850,242 +2063,296 @@ winningRows.forEach(row => {
         ){
 
             runningBalance = 0;
+
         }
 
 
         rowsHTML += `
 
-            <tr>
+        <tr>
 
-                <td class="date-col">
-                    ${formatDateTime(t.time)}
-                </td>
+            <td class="date-col">
+                ${formatDateTime(t.time)}
+            </td>
 
-                <td class="particular">
-                    ${escapeHTML(t.particulars)}
-                </td>
 
-                <td class="money debit">
-                    ${
-                        debit > 0
-                        ? "₹" + money(debit)
-                        : "-"
-                    }
-                </td>
+            <td class="particular">
+                ${escapeHTML(t.particulars)}
+            </td>
 
-                <td class="money credit">
-                    ${
-                        credit > 0
-                        ? "₹" + money(credit)
-                        : "-"
-                    }
-                </td>
 
-                <td class="balance">
-                    ₹${money(runningBalance)}
-                </td>
+            <td class="money debit">
 
-            </tr>
+                ${
+                    debit > 0
+                    ? "₹" + money(debit)
+                    : "-"
+                }
+
+            </td>
+
+
+            <td class="money credit">
+
+                ${
+                    credit > 0
+                    ? "₹" + money(credit)
+                    : "-"
+                }
+
+            </td>
+
+
+            <td class="balance">
+                ₹${money(runningBalance)}
+            </td>
+
+        </tr>
 
         `;
 
     });
 
 
+    /* =====================================
+       FINAL TABLE
+    ===================================== */
+
     statementArea.innerHTML = `
 
-        <div class="table-wrap">
+    <div class="table-wrap">
 
-            <table>
+        <table>
 
-                <thead>
+            <thead>
 
-                    <tr>
+                <tr>
 
-                        <th>
-                            Date / Time
-                        </th>
+                    <th>
+                        Date / Time
+                    </th>
 
-                        <th>
-                            Particulars
-                        </th>
+                    <th>
+                        Particulars
+                    </th>
 
-                        <th>
-                            Debit
-                        </th>
+                    <th>
+                        Debit
+                    </th>
 
-                        <th>
-                            Credit
-                        </th>
+                    <th>
+                        Credit
+                    </th>
 
-                        <th>
-                            Balance
-                        </th>
+                    <th>
+                        Balance
+                    </th>
 
-                    </tr>
+                </tr>
 
-                </thead>
+            </thead>
 
-                <tbody>
 
-                    ${rowsHTML}
+            <tbody>
 
-                </tbody>
+                ${rowsHTML}
 
-                <tfoot>
+            </tbody>
 
-                    <tr>
 
-                        <td
-                            colspan="2"
-                            class="total-label"
-                        >
-                            TOTAL
-                        </td>
+            <tfoot>
 
-                        <td class="money debit">
-                            ₹${money(totalDebit)}
-                        </td>
+                <tr>
 
-                        <td class="money credit">
-                            ₹${money(totalCredit)}
-                        </td>
+                    <td
+                        colspan="2"
+                        class="total-label"
+                    >
+                        TOTAL
+                    </td>
 
-                        <td class="balance">
-                            ₹${money(runningBalance)}
-                        </td>
 
-                    </tr>
+                    <td class="money debit">
+                        ₹${money(totalDebit)}
+                    </td>
 
-                </tfoot>
 
-            </table>
+                    <td class="money credit">
+                        ₹${money(totalCredit)}
+                    </td>
+
+
+                    <td class="balance">
+                        ₹${money(runningBalance)}
+                    </td>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+    </div>
+
+
+    <div class="summary">
+
+        <div class="summary-row">
+
+            <span class="summary-title">
+                Opening Balance
+            </span>
+
+            <span class="summary-value">
+                ₹${money(openingBalance)}
+            </span>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span class="summary-title">
+                Total Debit
+            </span>
+
+            <span class="summary-value debit">
+                ₹${money(totalDebit)}
+            </span>
 
         </div>
 
 
-        <div class="summary">
+        <div class="summary-row">
 
-            <div class="summary-row">
+            <span class="summary-title">
+                Total Credit
+            </span>
 
-                <span class="summary-title">
-                    Opening Balance
-                </span>
-
-                <span class="summary-value">
-                    ₹${money(openingBalance)}
-                </span>
-
-            </div>
-
-
-            <div class="summary-row">
-
-                <span class="summary-title">
-                    Total Debit
-                </span>
-
-                <span class="summary-value debit">
-                    ₹${money(totalDebit)}
-                </span>
-
-            </div>
-
-
-            <div class="summary-row">
-
-                <span class="summary-title">
-                    Total Credit
-                </span>
-
-                <span class="summary-value credit">
-                    ₹${money(totalCredit)}
-                </span>
-
-            </div>
-
-
-            <div class="summary-row">
-
-                <span class="summary-title">
-                    Closing Balance
-                </span>
-
-                <span class="summary-value">
-                    ₹${money(runningBalance)}
-                </span>
-
-            </div>
+            <span class="summary-value credit">
+                ₹${money(totalCredit)}
+            </span>
 
         </div>
+
+
+        <div class="summary-row">
+
+            <span class="summary-title">
+                Closing Balance
+            </span>
+
+            <span class="summary-value">
+                ₹${money(runningBalance)}
+            </span>
+
+        </div>
+
+    </div>
 
     `;
 
 }
 
 
-/* =========================
+/* =========================================
    FORMAT DATE TIME
-========================= */
+========================================= */
 
 function formatDateTime(date){
 
     const d =
         new Date(date);
 
+
     let hours =
         d.getHours();
 
+
     const minutes =
-        pad(d.getMinutes());
+        pad(
+            d.getMinutes()
+        );
+
 
     const seconds =
-        pad(d.getSeconds());
+        pad(
+            d.getSeconds()
+        );
+
 
     const ampm =
         hours >= 12
         ? "pm"
         : "am";
 
+
     hours =
         hours % 12;
+
 
     if(hours === 0){
 
         hours = 12;
+
     }
 
-    return `
-        ${pad(d.getDate())}/
-        ${pad(d.getMonth()+1)}/
-        ${d.getFullYear()},
-        ${hours}:${minutes}:${seconds} ${ampm}
-    `.replace(/\s+/g," ").trim();
+
+    return (
+        pad(d.getDate()) +
+        "/" +
+        pad(d.getMonth()+1) +
+        "/" +
+        d.getFullYear() +
+        ", " +
+        hours +
+        ":" +
+        minutes +
+        ":" +
+        seconds +
+        " " +
+        ampm
+    );
 
 }
 
 
-/* =========================
+/* =========================================
    ESCAPE HTML
-========================= */
+========================================= */
 
 function escapeHTML(value){
 
     return String(
         value ?? ""
     )
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
 
 
-/* =========================
+/* =========================================
    START
-========================= */
+========================================= */
 
 async function init(){
 
