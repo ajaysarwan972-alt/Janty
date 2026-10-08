@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>User Bank Statement</title>
 
@@ -256,11 +259,14 @@ tfoot td{
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
     <h1>USER BANK STATEMENT</h1>
+
 
     <div class="filters">
 
@@ -304,7 +310,9 @@ tfoot td{
 
         <h2>User Details</h2>
 
+
         <div class="details-grid">
+
 
             <div class="detail">
 
@@ -353,6 +361,7 @@ tfoot td{
 
             </div>
 
+
         </div>
 
     </div>
@@ -386,10 +395,12 @@ tfoot td{
 
     </div>
 
+
 </div>
 
 
 <script>
+
 
 /* =========================================
    SUPABASE
@@ -398,8 +409,10 @@ tfoot td{
 const SUPABASE_URL =
 "https://katbdbzoufiblnnsoxkk.supabase.co";
 
+
 const SUPABASE_KEY =
 "sb_publishable_--fdpQMmSlUyt2ywjUErgQ_LXGvQH-a";
+
 
 const supabaseClient =
 supabase.createClient(
@@ -413,19 +426,33 @@ supabase.createClient(
 ========================================= */
 
 const userSelect =
-document.getElementById("userSelect");
+document.getElementById(
+    "userSelect"
+);
+
 
 const dateSelect =
-document.getElementById("dateSelect");
+document.getElementById(
+    "dateSelect"
+);
+
 
 const userDetails =
-document.getElementById("userDetails");
+document.getElementById(
+    "userDetails"
+);
+
 
 const openingBox =
-document.getElementById("openingBox");
+document.getElementById(
+    "openingBox"
+);
+
 
 const statementArea =
-document.getElementById("statementArea");
+document.getElementById(
+    "statementArea"
+);
 
 
 let users = [];
@@ -441,6 +468,7 @@ function money(value){
 
     value =
         Number(value || 0);
+
 
     return value.toLocaleString(
         "en-IN",
@@ -476,15 +504,18 @@ function formatDateOnly(date){
     const y =
         date.getFullYear();
 
+
     const m =
         pad(
             date.getMonth()+1
         );
 
+
     const d =
         pad(
             date.getDate()
         );
+
 
     return `${y}-${m}-${d}`;
 
@@ -499,6 +530,7 @@ function displayDate(date){
 
     const d =
         new Date(date);
+
 
     return (
         pad(d.getDate()) +
@@ -526,12 +558,15 @@ function statementRange(dateString){
             `${dateString}T05:00:00`
         );
 
+
     const end =
         new Date(start);
+
 
     end.setDate(
         end.getDate()+1
     );
+
 
     return {
         start,
@@ -542,7 +577,7 @@ function statementRange(dateString){
 
 
 /* =========================================
-   LOCAL DATETIME STRING
+   LOCAL DATETIME
 ========================================= */
 
 function localDateTimeString(date){
@@ -584,6 +619,7 @@ function formatDateTime(date){
     const d =
         new Date(date);
 
+
     if(
         Number.isNaN(
             d.getTime()
@@ -593,6 +629,7 @@ function formatDateTime(date){
         return "-";
 
     }
+
 
     return (
         pad(d.getDate()) +
@@ -626,6 +663,7 @@ async function getAllRows(
 
     let from = 0;
 
+
     while(true){
 
         let query =
@@ -633,8 +671,10 @@ async function getAllRows(
                 .from(table)
                 .select(select);
 
+
         query =
             filterFunction(query);
+
 
         const {
             data,
@@ -685,6 +725,7 @@ async function getAllRows(
 
     }
 
+
     return all;
 
 }
@@ -720,9 +761,11 @@ async function loadUsers(){
             error
         );
 
+
         alert(
             "User list load nahi hui."
         );
+
 
         return;
 
@@ -849,8 +892,10 @@ userSelect.addEventListener(
             userDetails.style.display =
                 "none";
 
+
             openingBox.style.display =
                 "none";
+
 
             statementArea.innerHTML =
                 `
@@ -858,6 +903,7 @@ userSelect.addEventListener(
                     User ID और Statement Date select करें
                 </div>
                 `;
+
 
             return;
 
@@ -989,8 +1035,10 @@ async function loadStatement(){
 
 
         /* =====================================
-           1. HISTORY
-           GAME / BET = DEBIT
+           HISTORY
+           GAME / BET
+
+           DEBIT = PLUS
         ===================================== */
 
         const historyRows =
@@ -1074,8 +1122,9 @@ async function loadStatement(){
 
 
         /* =====================================
-           2. DEPOSITS
-           CREDIT
+           DEPOSITS
+
+           CREDIT = MINUS
         ===================================== */
 
         const depositRows =
@@ -1188,10 +1237,11 @@ async function loadStatement(){
 
 
         /* =====================================
-           3. DEPOSIT REQUESTS
-           CREDIT
+           DEPOSIT REQUESTS
 
-           Duplicate avoid
+           CREDIT = MINUS
+
+           DUPLICATE AVOID
         ===================================== */
 
         const depositRequestRows =
@@ -1362,8 +1412,9 @@ async function loadStatement(){
 
 
         /* =====================================
-           4. WINING
-           CREDIT
+           WINING
+
+           CREDIT = MINUS
         ===================================== */
 
         const winningRows =
@@ -1424,18 +1475,6 @@ async function loadStatement(){
                 }
 
 
-                if(!row.created_at){
-
-                    return;
-
-                }
-
-
-                const market =
-                    row.market ||
-                    "Game";
-
-
                 transactions.push({
 
                     time:
@@ -1444,7 +1483,7 @@ async function loadStatement(){
                         ),
 
                     particulars:
-                        `${market} - Winning`,
+                        `${row.market || "Game"} - Winning`,
 
                     debit:
                         0,
@@ -1465,8 +1504,9 @@ async function loadStatement(){
 
 
         /* =====================================
-           5. WITHDRAW
-           DEBIT
+           WITHDRAW
+
+           DEBIT = PLUS
         ===================================== */
 
         try{
@@ -1578,7 +1618,7 @@ async function loadStatement(){
         }catch(error){
 
             console.log(
-                "Withdraw table error:",
+                "Withdraw error:",
                 error
             );
 
@@ -1586,7 +1626,12 @@ async function loadStatement(){
 
 
         /* =====================================
-           6. ADMIN HISTORY
+           ADMIN HISTORY
+
+           Yahan bhi:
+
+           Debit  = PLUS
+           Credit = MINUS
         ===================================== */
 
         try{
@@ -1649,9 +1694,19 @@ async function loadStatement(){
 
 
                     /*
-                       Agar old_balance aur
-                       new_balance valid hain,
-                       difference hi transaction hai.
+                       IMPORTANT
+
+                       Admin history me actual
+                       balance movement:
+
+                       Balance kam hua
+                       = CREDIT
+
+                       Balance badha
+                       = DEBIT
+
+                       Kyunki tumhare statement
+                       system me ulta sign hai.
                     */
 
                     if(
@@ -1666,7 +1721,7 @@ async function loadStatement(){
 
                         if(difference > 0){
 
-                            credit =
+                            debit =
                                 difference;
 
                         }
@@ -1674,7 +1729,7 @@ async function loadStatement(){
 
                         if(difference < 0){
 
-                            debit =
+                            credit =
                                 Math.abs(
                                     difference
                                 );
@@ -1685,9 +1740,8 @@ async function loadStatement(){
 
 
                     /*
-                       Agar balance difference
-                       available nahi hai to
-                       action_amount use hoga.
+                       Balance difference available
+                       nahi ho to action_amount.
                     */
 
                     if(
@@ -1759,7 +1813,8 @@ async function loadStatement(){
                         particulars =
                             "Withdraw";
 
-                    }else if(
+                    }
+                    else if(
                         typeText.includes("deposit") ||
                         typeText.includes("add") ||
                         typeText.includes("credit")
@@ -1772,7 +1827,7 @@ async function loadStatement(){
 
 
                     /*
-                       Obvious duplicate avoid
+                       Duplicate avoid
                     */
 
                     const duplicate =
@@ -1844,7 +1899,7 @@ async function loadStatement(){
 
 
         /* =====================================
-           SORT
+           SORT BY TIME
         ===================================== */
 
         transactions.sort(
@@ -1856,9 +1911,8 @@ async function loadStatement(){
 
         /* =====================================
            REAL LOGIN BALANCE
-           
-           IMPORTANT:
-           login.balance = REAL CURRENT BALANCE
+
+           Ye hi actual/current balance hai.
         ===================================== */
 
         const currentWallet =
@@ -1867,26 +1921,9 @@ async function loadStatement(){
             );
 
 
-        /*
-           =====================================
-           OPENING BALANCE
-
-           REAL LOGIN BALANCE
-           - TODAY CREDIT
-           + TODAY DEBIT
-
-           Example:
-
-           Login Balance = 1060
-           Credit = 2760
-           Debit = 1770
-
-           Opening =
-           1060 - 2760 + 1770
-
-           = 70
-           =====================================
-        */
+        /* =====================================
+           TOTAL DEBIT / CREDIT
+        ===================================== */
 
         let totalDebit = 0;
 
@@ -1901,6 +1938,7 @@ async function loadStatement(){
                         t.debit || 0
                     );
 
+
                 totalCredit +=
                     Number(
                         t.credit || 0
@@ -1910,10 +1948,37 @@ async function loadStatement(){
         );
 
 
+        /* =====================================
+           IMPORTANT SYSTEM
+
+           TUMHARA SYSTEM:
+
+           DEBIT  = PLUS
+           CREDIT = MINUS
+
+           Isliye:
+
+           Opening =
+           Login Balance
+           - Total Debit
+           + Total Credit
+
+           Example:
+
+           Login = 1060
+           Debit = 2630
+           Credit = 2760
+
+           Opening =
+           1060 - 2630 + 2760
+
+           = 1190
+        ===================================== */
+
         let openingBalance =
             currentWallet -
-            totalCredit +
-            totalDebit;
+            totalDebit +
+            totalCredit;
 
 
         if(
@@ -1939,8 +2004,7 @@ async function loadStatement(){
 
 
         /*
-           REAL LOGIN BALANCE ko
-           hamesha closing balance rakhenge.
+           Closing = REAL login.balance
         */
 
         const closingBalance =
@@ -1967,6 +2031,7 @@ async function loadStatement(){
 
             statementArea.innerHTML =
                 `
+
                 <div class="table-wrap">
 
                     <table>
@@ -1999,16 +2064,17 @@ async function loadStatement(){
 
                         </thead>
 
+
                         <tbody>
 
                             <tr>
 
-                                <td colspan="5"
-                                    class="empty">
-
+                                <td
+                                    colspan="5"
+                                    class="empty"
+                                >
                                     Is date par koi
                                     transaction nahi mila.
-
                                 </td>
 
                             </tr>
@@ -2074,7 +2140,9 @@ async function loadStatement(){
                     </div>
 
                 </div>
+
                 `;
+
 
             return;
 
@@ -2083,13 +2151,17 @@ async function loadStatement(){
 
         /* =====================================
            RUNNING BALANCE
+
+           DEBIT  = PLUS
+           CREDIT = MINUS
         ===================================== */
 
         let runningBalance =
             openingBalance;
 
 
-        let rowsHTML = "";
+        let rowsHTML =
+            "";
 
 
         transactions.forEach(
@@ -2108,13 +2180,15 @@ async function loadStatement(){
 
 
                 /*
-                   Debit = minus
-                   Credit = plus
+                   TUMHARA SYSTEM
+
+                   DEBIT = ADD
+                   CREDIT = SUBTRACT
                 */
 
                 runningBalance =
-                    runningBalance -
-                    debit +
+                    runningBalance +
+                    debit -
                     credit;
 
 
@@ -2131,15 +2205,20 @@ async function loadStatement(){
 
                 rowsHTML +=
                     `
+
                     <tr>
 
                         <td class="date-col">
                             ${formatDateTime(t.time)}
                         </td>
 
+
                         <td class="particular">
-                            ${escapeHTML(t.particulars)}
+                            ${escapeHTML(
+                                t.particulars
+                            )}
                         </td>
+
 
                         <td class="money debit">
 
@@ -2151,6 +2230,7 @@ async function loadStatement(){
 
                         </td>
 
+
                         <td class="money credit">
 
                             ${
@@ -2161,27 +2241,26 @@ async function loadStatement(){
 
                         </td>
 
+
                         <td class="balance">
-                            ₹${money(runningBalance)}
+
+                            ₹${money(
+                                runningBalance
+                            )}
+
                         </td>
 
                     </tr>
+
                     `;
 
             }
         );
 
 
-        /*
-           IMPORTANT:
-
-           Running calculation ka last balance
-           login.balance ke equal hona chahiye.
-
-           Isliye displayed closing =
-           login.balance
-        */
-
+        /* =====================================
+           STATEMENT
+        ===================================== */
 
         statementArea.innerHTML =
             `
@@ -2237,22 +2316,31 @@ async function loadStatement(){
                                 TOTAL
                             </td>
 
+
                             <td
                                 class="money debit"
                             >
-                                ₹${money(totalDebit)}
+                                ₹${money(
+                                    totalDebit
+                                )}
                             </td>
+
 
                             <td
                                 class="money credit"
                             >
-                                ₹${money(totalCredit)}
+                                ₹${money(
+                                    totalCredit
+                                )}
                             </td>
+
 
                             <td
                                 class="balance"
                             >
-                                ₹${money(closingBalance)}
+                                ₹${money(
+                                    closingBalance
+                                )}
                             </td>
 
                         </tr>
@@ -2266,6 +2354,7 @@ async function loadStatement(){
 
             <div class="summary">
 
+
                 <div class="summary-row">
 
                     <div class="summary-title">
@@ -2273,7 +2362,9 @@ async function loadStatement(){
                     </div>
 
                     <div class="summary-value">
-                        ₹${money(openingBalance)}
+                        ₹${money(
+                            openingBalance
+                        )}
                     </div>
 
                 </div>
@@ -2286,7 +2377,9 @@ async function loadStatement(){
                     </div>
 
                     <div class="summary-value">
-                        ₹${money(totalDebit)}
+                        ₹${money(
+                            totalDebit
+                        )}
                     </div>
 
                 </div>
@@ -2299,7 +2392,9 @@ async function loadStatement(){
                     </div>
 
                     <div class="summary-value">
-                        ₹${money(totalCredit)}
+                        ₹${money(
+                            totalCredit
+                        )}
                     </div>
 
                 </div>
@@ -2312,10 +2407,13 @@ async function loadStatement(){
                     </div>
 
                     <div class="summary-value">
-                        ₹${money(closingBalance)}
+                        ₹${money(
+                            closingBalance
+                        )}
                     </div>
 
                 </div>
+
 
             </div>
 
@@ -2332,6 +2430,7 @@ async function loadStatement(){
 
         statementArea.innerHTML =
             `
+
             <div class="error">
 
                 Statement load karte waqt
@@ -2345,6 +2444,7 @@ async function loadStatement(){
                 )}
 
             </div>
+
             `;
 
     }
@@ -2363,4 +2463,5 @@ loadDates();
 </script>
 
 </body>
+
 </html>
